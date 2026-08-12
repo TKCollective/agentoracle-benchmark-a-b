@@ -25,9 +25,12 @@ AgentOracle `/evaluate` is the gate under test, not the scorer.
 
 ## Model independence
 
-Rerun on the same 200 questions with GPT-5.4 and Kimi K2.6 as the base
-model driving both agents, to test whether the failure class and catch
-rate generalize.
+The same 200 questions run across three version-pinned models from three
+provider families: **GPT-5.6, kimi-k3, and claude-sonnet-5**. Exact pins
+publish in the harness lockfile before the first run.
+
+Catch rate and confidence interval are reported per model.
+**Between-model differences are a primary result, not a failure to hide.**
 
 ## Live results page
 

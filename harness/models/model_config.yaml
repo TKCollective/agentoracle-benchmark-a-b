@@ -1,3 +1,16 @@
 # Base models driving both agents. Same config for U and G — the gate is
 # the only variable.
-models: []   # pinned at harness completion
+#
+# Three provider families. Exact version pins land in the lockfile before the
+# first run (target 2026-08-17). Selected for documented API availability and
+# pinnability through the run window, not benchmark rank.
+models:
+  - family: openai
+    model: gpt-5.6
+    pin: null      # exact snapshot id pinned at harness completion
+  - family: moonshot
+    model: kimi-k3
+    pin: null
+  - family: anthropic
+    model: claude-sonnet-5
+    pin: null

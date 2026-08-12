@@ -98,10 +98,23 @@ agent fix its work. Reported per domain and overall, across all base models.
 ## Model independence
 
 A result that only holds for one base model is a curiosity. The full
-experiment reruns on GPT-5.4 and Kimi K2.6. The claim under test: same
-failure class, same catch rate. A stable catch rate generalizes to "the gate
-works" rather than "the gate works on this one model." **An unstable rate is
-itself a reportable result.**
+experiment runs across **three version-pinned models from three provider
+families: GPT-5.6, kimi-k3, and claude-sonnet-5.** Exact version pins publish
+in the harness lockfile before the first run.
+
+**Selection rule.** Models are selected for documented API availability and
+version pinning through the run window — **not benchmark rank.** A model
+that cannot be pinned for the duration cannot carry a pre-registered result.
+
+**Deviation rule.** If a model is withdrawn or changed mid-window, that is
+published as a **pre-registered deviation, never a silent substitution.** The
+deviation notice states which model, when, and what replaced it.
+
+**Reporting.** Catch rate and confidence interval are reported per model.
+**Between-model differences are a primary result, not a failure to hide.**
+Three provider families are the point: a catch rate that holds across
+independent vendors is evidence about the gate; one that holds only on a
+single family is evidence about that family.
 
 ## The commitment
 
