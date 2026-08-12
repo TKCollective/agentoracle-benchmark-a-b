@@ -31,11 +31,32 @@ Applies only where Tier 2 is ambiguous (near-threshold semantic match, or
 graders disagree). Reviewers see the claim and the source, never the agent
 identity. Adjudications ship as raw JSONL with the results.
 
-## Reported quantity
+## Which citations get graded
 
-Citation survival rate = `supported / total_citations_emitted`, reported
+**Every citation the gate saw — including the ones it blocked.**
+
+A blocked citation is never emitted. If only emitted citations are graded, a
+blocked citation's correctness is never known, and the gate's false-positive
+rate is unmeasurable. Grading covers:
+
+- every citation Agent U emitted;
+- every citation Agent G emitted;
+- **every citation Agent G proposed and the gate rejected.**
+
+Rejected-citation labels publish in the raw JSONL alongside the rest. Graders
+never see whether a citation was emitted, blocked, or which agent produced it.
+
+## Reported quantities
+
+**Citation survival rate** = `supported / total_citations_emitted`, reported
 per domain (finance, medical, legal, technical) and overall, for Agent U
 and Agent G separately. Weak categories publish with the rest.
+
+**Gate accuracy** — `/evaluate`'s verdict compared against the independent
+ground-truth label for the same citation: precision, recall, and the full
+confusion matrix as raw counts, per domain and per base model. This isolates
+the gate from the agent's replan behavior, which survival rate and correction
+rate measure jointly. See `pre-registration.md`.
 
 ## What the gate is not
 

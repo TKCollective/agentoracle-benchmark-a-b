@@ -95,6 +95,42 @@ number, separate from the block rate. A random blocker can stop a bad
 citation; only a gate whose objection carries usable information lets the
 agent fix its work. Reported per domain and overall, across all base models.
 
+**Gate accuracy — `/evaluate` measured directly as a classifier.**
+
+Survival rate and correction rate both measure the gate *and* the agent's
+replan behavior together. They cannot tell you how good the gate is on its
+own. This metric does.
+
+For every citation `/evaluate` inspects, its verdict (pass / fail) is compared
+against that same citation's independent ground-truth label. Reported per
+domain, per base model, and overall:
+
+- **Precision** — of the citations the gate passed, how many survived ground truth.
+- **Recall** — of the citations that fail ground truth, how many the gate caught.
+- **The full confusion matrix** — true/false positives and negatives, as raw counts, not just derived rates.
+
+**This requires ground-truthing citations the gate blocked.** A blocked
+citation is never emitted, so under a survival-rate-only design it is never
+labeled and its correctness is never known. Every citation the gate *saw* goes
+to ground truth, including the ones it rejected. Blocked-citation labels
+publish in the raw JSONL with the rest.
+
+**The false-positive rate is the number that matters most, and it is the one
+survival rate structurally hides.** A fail-closed gate that rejects good
+citations looks identical in a survival-rate table to one that rejects only
+bad ones — both raise the survival rate of what ships. But over-blocking
+destroys usable evidence and makes a gate unusable in production. Publishing
+precision and recall means the gate's cost is visible alongside its benefit.
+
+**Amendment provenance.** This metric was not in the design published earlier
+today. It was added 2026-08-12, **before harness completion and before any
+data collection**, after [@babyblueviper1](https://x.com/babyblueviper1) asked
+whether direct gate accuracy was in scope or deliberately out. It was out by
+omission, not by intent. Adding a metric before any data exists is a
+legitimate amendment; adding one after would not be. The change is visible in
+this repository's commit history, per the anchoring rule stated at the top of
+this document.
+
 ## Model independence
 
 A result that only holds for one base model is a curiosity. The full

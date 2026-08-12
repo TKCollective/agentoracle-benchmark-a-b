@@ -18,6 +18,14 @@ never which LLM lies most.
 - [ ] Run across three base models (Aug 19–26)
 - [ ] Results published, raw JSONL included (Sep 2)
 
+## Metrics
+
+Citation survival rate · correction rate · **gate accuracy** (`/evaluate`
+precision, recall, and confusion matrix against independent ground truth,
+isolating the gate from the agent's replan behavior). Every citation the gate
+saw is graded, **including the ones it blocked** — otherwise the
+false-positive rate is unmeasurable.
+
 ## Ground truth (locked)
 
 Deterministic first, human second. See `docs/ground-truth-spec.md`.
