@@ -1,0 +1,7 @@
+{
+  "_note": "Frozen at pre-registration. Any change after Aug 12 invalidates the run.",
+  "domains": ["finance", "medical", "legal", "technical"],
+  "per_domain": 50,
+  "total": 200,
+  "questions": []
+}

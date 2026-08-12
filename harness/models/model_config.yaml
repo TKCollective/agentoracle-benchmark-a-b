@@ -1,0 +1,3 @@
+# Base models driving both agents. Same config for U and G — the gate is
+# the only variable.
+models: []   # pinned at harness completion
