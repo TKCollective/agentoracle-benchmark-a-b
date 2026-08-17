@@ -180,6 +180,66 @@ JSONL. A reader can verify offline that the published gate decisions are the
 ones actually issued, without trusting our copy of the data. The
 experiment's evidence is held to the standard the experiment is about.
 
+## Question-set freeze amendment
+
+**Dated 2026-08-17. Published before the first run and before any data
+collection, under the deviation rule stated in this document.**
+
+At publication on 2026-08-12, `harness/questions/questions.json` declared
+`"total": 200` over an empty `questions` array, and carried this note:
+
+> `"Frozen at pre-registration. Any change after Aug 12 invalidates the run."`
+
+**That note was wrong, and stricter than anything this document requires.** The
+design above commits the 200 questions to being *"fixed before the run"* — and
+the schedule below sets the run at 2026-08-19, with harness completion on
+2026-08-17. The note misstated a freeze-before-the-run commitment as a
+freeze-at-publication commitment, which was never the design.
+
+**What changed.** The 200 questions were written and committed on 2026-08-17,
+before the first run and before any data collection. The note was replaced with
+one that states the actual commitment and makes it checkable.
+
+**Why this is a legitimate amendment.** It follows the same test applied to the
+gate-accuracy metric earlier in this document: that metric was added
+2026-08-12, before harness completion and before any data collection, and the
+reasoning recorded there was that *"adding a metric before any data exists is a
+legitimate amendment; adding one after would not be."* The same standard
+applies here. No question has been run through either agent. Correcting a note
+that overstated a constraint, before any data exists, does not move a goalpost —
+it removes a claim we could not honour and did not need to make.
+
+**The upgrade: the freeze is now an artifact rather than a sentence.** A note
+saying "frozen" is an assertion. Instead:
+
+```
+sha256 of the RFC 8785 (JCS) canonical bytes of the .questions array
+  = f7f70bd92dc284adaeb2580117e324cf379fa4beae9a9a2c5fc0bd40aefee7a5
+canonical byte length = 56403
+```
+
+Recompute it with the canonicalizer shipped in this repository:
+
+```python
+import json, hashlib
+from harness.receipts.receipt_writer import canonicalize
+q = json.load(open("harness/questions/questions.json"))["questions"]
+print(hashlib.sha256(canonicalize(q)).hexdigest())
+```
+
+The hash covers the `questions` array only, not the whole file, so the note
+recording the hash cannot alter it. Any later change to the question set
+changes this digest and must publish as its own dated deviation. This is the
+same move the verification work makes everywhere else: replace a claim about a
+record with a record that can be checked without trusting us.
+
+**Also corrected on 2026-08-17, on a separate surface.** The changelog entry at
+`agentoracle.co/changelog` for 2026-08-12 stated that the pre-registration
+document, harness, and questions were all public before any data was collected.
+The harness was a disclosed stub and the question set was empty, both scheduled
+below for 2026-08-17. That entry now carries a dated correction quoting its
+original wording.
+
 ## Schedule
 
 | Date | Milestone |

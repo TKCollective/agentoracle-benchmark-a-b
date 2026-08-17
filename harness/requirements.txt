@@ -1,1 +1,19 @@
-# pinned at harness completion (target Aug 17)
+# Experiment A harness — pinned dependencies.
+# Python 3.12. Install with:  python3 -m pip install -r harness/requirements.txt
+#
+# Deliberately minimal. RFC 8785 (JCS) canonicalization is implemented inside
+# harness/receipts/receipt_writer.py rather than taken from a third-party
+# package, so receipt bytes do not depend on an unpinnable transitive
+# canonicalizer. No provider SDK is pinned here: the live model adapters are
+# wired at the start of the collection window and a dry run must install and
+# execute with these packages alone.
+
+cryptography==48.0.0   # Ed25519 signing/verification for receipts (JWS EdDSA)
+PyYAML==6.0.3          # harness/models/model_config.yaml
+requests==2.34.2       # /evaluate HTTP client (unused under --dry-run)
+
+# transitive, pinned for reproducibility
+certifi==2026.5.20
+charset-normalizer==3.4.7
+idna==3.16
+urllib3==2.7.0

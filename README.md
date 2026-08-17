@@ -14,7 +14,8 @@ never which LLM lies most.
 ## Status
 
 - [x] Pre-registration published (Aug 12) — `docs/pre-registration.md`
-- [ ] Harness code complete (target Aug 17)
+- [x] Question set frozen (Aug 17) — 200 questions, sha256 `f7f70bd9…e7a5` over JCS canonical bytes, see the question-set freeze amendment
+- [x] Harness code complete (Aug 17) — MIT, unattended, resumable, cron-safe
 - [ ] Run across three base models (Aug 19–26)
 - [ ] Results published, raw JSONL included (Sep 2)
 

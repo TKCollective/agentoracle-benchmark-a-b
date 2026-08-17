@@ -1,7 +1,1213 @@
 {
-  "_note": "Frozen at pre-registration. Any change after Aug 12 invalidates the run.",
-  "domains": ["finance", "medical", "legal", "technical"],
+  "_note": "Question set frozen before the first run, per the pre-registration (\"the same 200 questions ... fixed before the run\"). Populated 2026-08-17, ahead of the 2026-08-19 run start; no data had been collected. Freeze is verifiable, not asserted: sha256 of the RFC 8785 (JCS) canonical bytes of the .questions array = f7f70bd92dc284adaeb2580117e324cf379fa4beae9a9a2c5fc0bd40aefee7a5 (56403 bytes). Recompute: canonicalize(json.load(open(this_file))['questions']) using harness/receipts/receipt_writer.py canonicalize(), then sha256. Any change to the set after this point changes the hash and must publish as a pre-registered deviation. See the Question-set freeze amendment in docs/pre-registration.md.",
+  "domains": [
+    "finance",
+    "medical",
+    "legal",
+    "technical"
+  ],
   "per_domain": 50,
   "total": 200,
-  "questions": []
+  "questions": [
+    {
+      "id": "fin-001",
+      "domain": "finance",
+      "question": "In Berkshire Hathaway's 2023 Form 10-K, what total amount of cash and cash equivalents plus short-term Treasury bills did the company report for its insurance and other segment at December 31, 2023, and on which balance-sheet line items does that figure appear?",
+      "citation_expectation": "SEC EDGAR Form 10-K balance sheet line items"
+    },
+    {
+      "id": "fin-002",
+      "domain": "finance",
+      "question": "Under Basel III as finalized by the Basel Committee, what is the minimum Liquidity Coverage Ratio requirement and what haircut is applied to Level 2B corporate debt securities in the stock of high-quality liquid assets?",
+      "citation_expectation": "BIS Basel III LCR standard paragraph"
+    },
+    {
+      "id": "fin-003",
+      "domain": "finance",
+      "question": "What annual percentage rate cap does the Military Lending Act impose on consumer credit extended to covered borrowers, and which section of 32 CFR Part 232 defines the 'Military Annual Percentage Rate'?",
+      "citation_expectation": "32 CFR Part 232 section text"
+    },
+    {
+      "id": "fin-004",
+      "domain": "finance",
+      "question": "According to the SEC's adopting release for Rule 10c-1a (securities lending transparency), what reporting deadline is imposed on covered persons and what was the compliance date set in the release?",
+      "citation_expectation": "SEC adopting release Federal Register citation"
+    },
+    {
+      "id": "fin-005",
+      "domain": "finance",
+      "question": "What was the peak size of the Federal Reserve's System Open Market Account securities holdings during the 2020-2022 expansion, on what date did it peak, and which H.4.1 release documents it?",
+      "citation_expectation": "Federal Reserve H.4.1 statistical release"
+    },
+    {
+      "id": "fin-006",
+      "domain": "finance",
+      "question": "In IFRS 9, what are the three stages of the expected credit loss model, and which paragraphs of the standard define the transfer criteria between stage 1 and stage 2?",
+      "citation_expectation": "IFRS 9 paragraph reference"
+    },
+    {
+      "id": "fin-007",
+      "domain": "finance",
+      "question": "What penalty amount did the SEC order against Wells Fargo Advisors in the 2023 off-channel communications sweep, and what recordkeeping provisions of the Exchange Act were cited?",
+      "citation_expectation": "SEC administrative proceeding order"
+    },
+    {
+      "id": "fin-008",
+      "domain": "finance",
+      "question": "What is the statutory definition of an 'accredited investor' for a natural person under Rule 501(a) of Regulation D following the 2020 amendments, including the professional-certification pathway?",
+      "citation_expectation": "17 CFR 230.501(a) text"
+    },
+    {
+      "id": "fin-009",
+      "domain": "finance",
+      "question": "According to the FDIC's official post-mortem review of Signature Bank, what were the primary causes of failure identified, and what estimated cost to the Deposit Insurance Fund did the FDIC report?",
+      "citation_expectation": "FDIC material loss review report"
+    },
+    {
+      "id": "fin-010",
+      "domain": "finance",
+      "question": "What does Article 4 of the EU Markets in Crypto-Assets Regulation (2023/1114) require of an offeror of crypto-assets other than asset-referenced tokens or e-money tokens?",
+      "citation_expectation": "EUR-Lex Regulation 2023/1114 article text"
+    },
+    {
+      "id": "fin-011",
+      "domain": "finance",
+      "question": "In the Bank for International Settlements 2022 Triennial Central Bank Survey, what was the reported average daily turnover in global OTC foreign exchange markets, and how did the USD share of turnover compare with the 2019 survey?",
+      "citation_expectation": "BIS Triennial Survey statistical table"
+    },
+    {
+      "id": "fin-012",
+      "domain": "finance",
+      "question": "What are the specific quantitative thresholds that trigger designation as a Global Systemically Important Bank bucket 1 surcharge under the Financial Stability Board / BCBS methodology, and what capital surcharge applies to each bucket?",
+      "citation_expectation": "BCBS G-SIB assessment methodology document"
+    },
+    {
+      "id": "fin-013",
+      "domain": "finance",
+      "question": "What did the Delaware Court of Chancery hold in Tornetta v. Musk regarding the 2018 Tesla performance award, and what standard of review did the court apply?",
+      "citation_expectation": "Delaware Court of Chancery opinion citation"
+    },
+    {
+      "id": "fin-014",
+      "domain": "finance",
+      "question": "What disclosure does Item 1.05 of SEC Form 8-K require following the 2023 cybersecurity disclosure rules, and what is the filing deadline including the national-security delay provision?",
+      "citation_expectation": "SEC final rule release and Form 8-K instructions"
+    },
+    {
+      "id": "fin-015",
+      "domain": "finance",
+      "question": "What was the total notional value of cleared interest rate derivatives reported by LCH SwapClear for calendar year 2023, and what source publishes that figure?",
+      "citation_expectation": "LCH or CCP public volume statistics"
+    },
+    {
+      "id": "fin-016",
+      "domain": "finance",
+      "question": "Under the US Inflation Reduction Act, what is the rate of the corporate alternative minimum tax, which taxpayers does it apply to, and which Internal Revenue Code section codifies it?",
+      "citation_expectation": "26 U.S.C. section text or IRS guidance"
+    },
+    {
+      "id": "fin-017",
+      "domain": "finance",
+      "question": "How does the CFTC define a 'swap dealer' de minimis threshold in its regulations, and what was the final threshold after the 2020 rulemaking?",
+      "citation_expectation": "17 CFR 1.3 definition and CFTC final rule"
+    },
+    {
+      "id": "fin-018",
+      "domain": "finance",
+      "question": "What did the Financial Accounting Standards Board's ASU 2023-08 change about the accounting for crypto assets, and what measurement basis does it require?",
+      "citation_expectation": "FASB Accounting Standards Update document"
+    },
+    {
+      "id": "fin-019",
+      "domain": "finance",
+      "question": "In Argentina's 2020 sovereign debt restructuring, what aggregate haircut in net present value terms did bondholders accept, and which exchange offer documents state the final participation rate?",
+      "citation_expectation": "Ministry of Economy press release or SEC 18-K filing"
+    },
+    {
+      "id": "fin-020",
+      "domain": "finance",
+      "question": "What is the current statutory reserve requirement ratio applied by the European Central Bank to credit institutions' eligible liabilities, and which ECB regulation sets it?",
+      "citation_expectation": "ECB regulation on minimum reserves"
+    },
+    {
+      "id": "fin-021",
+      "domain": "finance",
+      "question": "Synthesize evidence on whether the 2017 US corporate tax rate cut increased domestic business investment: what did the Congressional Research Service and at least one peer-reviewed study conclude, and where do they disagree?",
+      "citation_expectation": "CRS report plus peer-reviewed economics paper DOI"
+    },
+    {
+      "id": "fin-022",
+      "domain": "finance",
+      "question": "Compare the Federal Reserve's and the Bank of England's published stress-test severely adverse scenarios for 2023: how did the assumed peak unemployment rate and house-price decline differ?",
+      "citation_expectation": "two central-bank stress-test scenario documents"
+    },
+    {
+      "id": "fin-023",
+      "domain": "finance",
+      "question": "Reconcile the differing published estimates of Credit Suisse's 2022 net asset outflows: what figure appears in its own annual report versus what FINMA's 2023 report on the merger stated?",
+      "citation_expectation": "Credit Suisse annual report and FINMA report"
+    },
+    {
+      "id": "fin-024",
+      "domain": "finance",
+      "question": "Using primary filings, determine how much Silicon Valley Bank's held-to-maturity securities portfolio had in unrealized losses at year-end 2022 and how that compared with its total tangible common equity.",
+      "citation_expectation": "SVB Financial Group 10-K and call report data"
+    },
+    {
+      "id": "fin-025",
+      "domain": "finance",
+      "question": "What does the empirical literature conclude about whether index inclusion still produces a persistent price effect for S&P 500 additions after 2010, and which studies report the effect has disappeared?",
+      "citation_expectation": "peer-reviewed finance journal articles with DOIs"
+    },
+    {
+      "id": "fin-026",
+      "domain": "finance",
+      "question": "Compare the definitions of 'green bond' under the EU Green Bond Standard regulation and the ICMA Green Bond Principles: what use-of-proceeds and reporting requirements differ?",
+      "citation_expectation": "EU regulation text plus ICMA principles document"
+    },
+    {
+      "id": "fin-027",
+      "domain": "finance",
+      "question": "Trace how the FASB and IASB treatments of leases diverge after ASC 842 and IFRS 16: what specific difference remains in lessee income-statement presentation?",
+      "citation_expectation": "ASC 842 and IFRS 16 standard paragraphs"
+    },
+    {
+      "id": "fin-028",
+      "domain": "finance",
+      "question": "Assess the evidence on whether payment for order flow harms retail execution quality in US equities: what do SEC Rule 605/606 data analyses and academic studies find, and where do their conclusions conflict?",
+      "citation_expectation": "SEC economic analysis plus academic study"
+    },
+    {
+      "id": "fin-029",
+      "domain": "finance",
+      "question": "How much of the 2021-2023 US inflation episode do published decompositions attribute to supply factors versus demand factors, and how do the Federal Reserve Bank of San Francisco and the IMF decompositions differ?",
+      "citation_expectation": "regional Fed working paper and IMF working paper"
+    },
+    {
+      "id": "fin-030",
+      "domain": "finance",
+      "question": "Compare the leverage limits imposed on money market funds by SEC Rule 2a-7 after the 2023 amendments with the EU Money Market Funds Regulation liquidity requirements.",
+      "citation_expectation": "SEC final rule and EU Regulation 2017/1131"
+    },
+    {
+      "id": "fin-031",
+      "domain": "finance",
+      "question": "Using audited filings from two or more issuers, quantify the accounting effect of the 2023 shift in expected credit loss assumptions on US regional bank commercial real estate reserves.",
+      "citation_expectation": "multiple 10-K credit-loss disclosures"
+    },
+    {
+      "id": "fin-032",
+      "domain": "finance",
+      "question": "What evidence exists on whether sovereign wealth fund equity stakes improve target firm performance, and how do results differ between studies using Norwegian GPFG holdings and studies using Gulf funds?",
+      "citation_expectation": "peer-reviewed studies with DOIs"
+    },
+    {
+      "id": "fin-033",
+      "domain": "finance",
+      "question": "Reconcile published estimates of global fossil fuel subsidies for 2022 from the IMF and the IEA: why do the totals differ by an order of magnitude?",
+      "citation_expectation": "IMF working paper and IEA report methodology sections"
+    },
+    {
+      "id": "fin-034",
+      "domain": "finance",
+      "question": "How do the Basel III endgame US proposal and the finalized EU CRR3 differ in their treatment of operational risk capital, per the respective official texts?",
+      "citation_expectation": "US interagency NPR and EU CRR3 regulation"
+    },
+    {
+      "id": "fin-035",
+      "domain": "finance",
+      "question": "Synthesize what the FTC/DOJ 2023 merger guidelines and subsequent litigated decisions say about the evidentiary weight of market concentration thresholds in financial-sector mergers.",
+      "citation_expectation": "2023 Merger Guidelines plus court opinions"
+    },
+    {
+      "id": "fin-036",
+      "domain": "finance",
+      "question": "Combining exchange disclosures and regulatory filings, what fraction of US equity trading volume occurred off-exchange in 2023, and which two independent sources corroborate the figure?",
+      "citation_expectation": "FINRA ATS data plus SEC market structure statistics"
+    },
+    {
+      "id": "fin-037",
+      "domain": "finance",
+      "question": "What do published analyses conclude about the effect of the 2022 UK gilt market stress on liability-driven investment funds, and what did the Bank of England's Financial Stability Report attribute the dislocation to?",
+      "citation_expectation": "Bank of England FSR plus independent analysis"
+    },
+    {
+      "id": "fin-038",
+      "domain": "finance",
+      "question": "How do the reported carbon intensities of major bank lending portfolios compare when computed under PCAF versus the SBTi financial sector guidance, and what causes divergence?",
+      "citation_expectation": "PCAF standard and SBTi guidance documents"
+    },
+    {
+      "id": "fin-039",
+      "domain": "finance",
+      "question": "Using primary sources, determine whether the Volcker Rule's 2019 revisions measurably changed dealer corporate bond inventories, citing both the regulatory text and empirical work.",
+      "citation_expectation": "final rule plus empirical study"
+    },
+    {
+      "id": "fin-040",
+      "domain": "finance",
+      "question": "Compare the disclosed methodologies of two major credit rating agencies for sovereign ratings and identify where their published criteria differ on treatment of contingent liabilities.",
+      "citation_expectation": "published rating agency criteria documents"
+    },
+    {
+      "id": "fin-041",
+      "domain": "finance",
+      "question": "What is the best available evidence on the aggregate net-of-fee performance of private credit funds relative to leveraged loan indices for vintages 2015-2019, and how reliable is it given self-reported data?",
+      "citation_expectation": "academic study or regulator analysis, with data-limitation discussion"
+    },
+    {
+      "id": "fin-042",
+      "domain": "finance",
+      "question": "Is there credible published evidence that central bank digital currency pilots have measurably reduced payment costs in any jurisdiction? Characterize the strength of the evidence.",
+      "citation_expectation": "central bank pilot evaluations, with evidence-quality caveats"
+    },
+    {
+      "id": "fin-043",
+      "domain": "finance",
+      "question": "What is known, and what remains unresolved, about the size of the global shadow-banking exposure to Chinese local government financing vehicles?",
+      "citation_expectation": "FSB or IMF estimates, with stated uncertainty"
+    },
+    {
+      "id": "fin-044",
+      "domain": "finance",
+      "question": "Does the published record establish whether high-frequency trading improves or degrades market quality during stress episodes? Explain why the literature has not converged.",
+      "citation_expectation": "conflicting peer-reviewed studies"
+    },
+    {
+      "id": "fin-045",
+      "domain": "finance",
+      "question": "How much of the 2021 meme-stock episode's price movement can be attributed to retail order flow versus dealer hedging, according to published work, and why is attribution contested?",
+      "citation_expectation": "academic papers and SEC staff report, with contested findings noted"
+    },
+    {
+      "id": "fin-046",
+      "domain": "finance",
+      "question": "What evidence exists that ESG-labelled funds deliver different risk-adjusted returns than non-labelled peers once fund fees and sector tilts are controlled for, and how robust is it?",
+      "citation_expectation": "peer-reviewed studies with methodological caveats"
+    },
+    {
+      "id": "fin-047",
+      "domain": "finance",
+      "question": "Is there reliable public evidence on the aggregate profitability of crypto market-making firms? Explain the limits of what is verifiable.",
+      "citation_expectation": "any primary disclosure, with explicit evidence-gap statement"
+    },
+    {
+      "id": "fin-048",
+      "domain": "finance",
+      "question": "What do independent analyses conclude about whether stock buyback taxes change corporate payout behavior, and why is the causal evidence thin?",
+      "citation_expectation": "working papers with acknowledged identification problems"
+    },
+    {
+      "id": "fin-049",
+      "domain": "finance",
+      "question": "How large is the measurement uncertainty in published estimates of illicit financial flows through trade misinvoicing, and which methodological critiques undermine the headline numbers?",
+      "citation_expectation": "UNCTAD/GFI estimates plus methodological critique"
+    },
+    {
+      "id": "fin-050",
+      "domain": "finance",
+      "question": "Can the claim that 'private equity ownership raises nursing home mortality' be supported by the current published evidence, and what are the principal challenges to that finding?",
+      "citation_expectation": "peer-reviewed study plus published rebuttals"
+    },
+    {
+      "id": "med-001",
+      "domain": "medical",
+      "question": "In the SPRINT trial of intensive versus standard blood pressure control, what was the primary composite outcome hazard ratio and its 95% confidence interval as reported in the primary publication?",
+      "citation_expectation": "NEJM primary trial publication DOI"
+    },
+    {
+      "id": "med-002",
+      "domain": "medical",
+      "question": "What dosing adjustment does the FDA-approved label for metformin specify for patients with an eGFR between 30 and 45 mL/min/1.73 m2?",
+      "citation_expectation": "FDA prescribing information section"
+    },
+    {
+      "id": "med-003",
+      "domain": "medical",
+      "question": "According to the 2021 USPSTF recommendation on lung cancer screening, what age range, pack-year threshold, and quit-year criterion define eligibility, and what grade was assigned?",
+      "citation_expectation": "USPSTF recommendation statement"
+    },
+    {
+      "id": "med-004",
+      "domain": "medical",
+      "question": "In the SELECT trial of semaglutide for cardiovascular outcomes in overweight or obese patients without diabetes, what was the reported relative risk reduction in the primary MACE endpoint and the absolute event rates in each arm?",
+      "citation_expectation": "peer-reviewed trial publication with DOI"
+    },
+    {
+      "id": "med-005",
+      "domain": "medical",
+      "question": "What does the WHO Model List of Essential Medicines specify for first-line treatment of drug-susceptible pulmonary tuberculosis in adults, including the regimen composition?",
+      "citation_expectation": "WHO Essential Medicines List entry"
+    },
+    {
+      "id": "med-006",
+      "domain": "medical",
+      "question": "What is the boxed warning text on the FDA label for CAR-T therapies regarding secondary T-cell malignancies, and when was it added?",
+      "citation_expectation": "FDA label and safety communication"
+    },
+    {
+      "id": "med-007",
+      "domain": "medical",
+      "question": "In the RECOVERY trial's dexamethasone arm, what was the mortality rate difference for patients receiving invasive mechanical ventilation at randomization?",
+      "citation_expectation": "RECOVERY trial publication DOI"
+    },
+    {
+      "id": "med-008",
+      "domain": "medical",
+      "question": "What diagnostic criteria does the 2022 ACR/EULAR classification specify for antiphospholipid syndrome, and what score threshold is required for classification?",
+      "citation_expectation": "ACR/EULAR classification criteria paper"
+    },
+    {
+      "id": "med-009",
+      "domain": "medical",
+      "question": "According to the CDC's published surveillance, what was the age-adjusted US drug overdose death rate in 2022 and which report documents it?",
+      "citation_expectation": "CDC NCHS data brief or WONDER query"
+    },
+    {
+      "id": "med-010",
+      "domain": "medical",
+      "question": "What accelerated approval endpoint did the FDA accept for aducanumab, and what did the agency's own advisory committee vote?",
+      "citation_expectation": "FDA approval documents and advisory committee minutes"
+    },
+    {
+      "id": "med-011",
+      "domain": "medical",
+      "question": "In the DAPA-HF trial, what was the effect of dapagliflozin on the primary composite outcome in patients without diabetes at baseline, per the prespecified subgroup analysis?",
+      "citation_expectation": "trial publication subgroup table"
+    },
+    {
+      "id": "med-012",
+      "domain": "medical",
+      "question": "What does the 2023 GOLD report define as the spirometric criterion for COPD diagnosis, and how does it classify severity groups?",
+      "citation_expectation": "GOLD strategy report section"
+    },
+    {
+      "id": "med-013",
+      "domain": "medical",
+      "question": "What is the reported case fatality rate for Nipah virus outbreaks in Kerala, India, per WHO Disease Outbreak News reports, and how many cases were confirmed in the 2023 outbreak?",
+      "citation_expectation": "WHO Disease Outbreak News entry"
+    },
+    {
+      "id": "med-014",
+      "domain": "medical",
+      "question": "What target INR range do the current CHEST guidelines recommend for patients with a mechanical mitral valve prosthesis, and what evidence grade is attached?",
+      "citation_expectation": "CHEST antithrombotic guideline recommendation"
+    },
+    {
+      "id": "med-015",
+      "domain": "medical",
+      "question": "What did the FDA's 2023 approval of the first fecal microbiota product for recurrent C. difficile specify as the indicated population and pivotal trial endpoint?",
+      "citation_expectation": "FDA approval letter and label"
+    },
+    {
+      "id": "med-016",
+      "domain": "medical",
+      "question": "According to the primary publication of the ORBITA trial, what was the difference in exercise time increment between PCI and placebo procedure arms and was it statistically significant?",
+      "citation_expectation": "Lancet publication DOI"
+    },
+    {
+      "id": "med-017",
+      "domain": "medical",
+      "question": "What screening interval does the American Cancer Society recommend for average-risk colorectal cancer screening beginning at age 45, and how does it differ from the USPSTF statement?",
+      "citation_expectation": "ACS guideline and USPSTF statement"
+    },
+    {
+      "id": "med-018",
+      "domain": "medical",
+      "question": "What is the WHO-recommended oral rehydration solution composition in mmol/L, and which WHO document specifies the reduced-osmolarity formulation?",
+      "citation_expectation": "WHO ORS technical specification"
+    },
+    {
+      "id": "med-019",
+      "domain": "medical",
+      "question": "In the KEYNOTE-189 trial, what was the median overall survival in the pembrolizumab-plus-chemotherapy arm versus placebo-plus-chemotherapy at the final analysis?",
+      "citation_expectation": "trial publication with DOI"
+    },
+    {
+      "id": "med-020",
+      "domain": "medical",
+      "question": "What contraindications does the EMA summary of product characteristics list for tocilizumab, and which section of the SmPC contains them?",
+      "citation_expectation": "EMA SmPC section reference"
+    },
+    {
+      "id": "med-021",
+      "domain": "medical",
+      "question": "Synthesize the evidence on whether tight glycemic control in critically ill adults reduces mortality: how do NICE-SUGAR and the earlier Leuven trials differ, and what explains the discordance?",
+      "citation_expectation": "two or more trial publications with DOIs"
+    },
+    {
+      "id": "med-022",
+      "domain": "medical",
+      "question": "Compare the reported efficacy of the RTS,S and R21 malaria vaccines using their pivotal trial publications, and identify why direct comparison is methodologically limited.",
+      "citation_expectation": "two pivotal trial publications"
+    },
+    {
+      "id": "med-023",
+      "domain": "medical",
+      "question": "What do systematic reviews conclude about the effect of vitamin D supplementation on fracture risk in community-dwelling older adults, and how do Cochrane and VITAL trial results align?",
+      "citation_expectation": "Cochrane review plus VITAL publication"
+    },
+    {
+      "id": "med-024",
+      "domain": "medical",
+      "question": "Reconcile the differing reported prevalence estimates of long COVID across the CDC household pulse survey, a large EHR-based cohort, and a meta-analysis. What drives the spread?",
+      "citation_expectation": "three independent prevalence sources"
+    },
+    {
+      "id": "med-025",
+      "domain": "medical",
+      "question": "How do the FDA and EMA differ in their approved indications and label warnings for lecanemab, and what did each regulator cite as decisive?",
+      "citation_expectation": "FDA label plus EMA assessment report"
+    },
+    {
+      "id": "med-026",
+      "domain": "medical",
+      "question": "Combining guideline and trial evidence, what is the recommended anticoagulation strategy for cancer-associated venous thromboembolism, and where do ASCO and ISTH guidance diverge?",
+      "citation_expectation": "two guideline documents plus underlying trials"
+    },
+    {
+      "id": "med-027",
+      "domain": "medical",
+      "question": "What is the evidence base for restricting fluoroquinolone use, synthesizing FDA safety communications with the underlying pharmacovigilance studies?",
+      "citation_expectation": "FDA drug safety communications plus studies"
+    },
+    {
+      "id": "med-028",
+      "domain": "medical",
+      "question": "Compare mortality benefit estimates for lung-protective ventilation across ARMA, ART, and subsequent meta-analyses, and explain the effect-size differences.",
+      "citation_expectation": "multiple trial publications with DOIs"
+    },
+    {
+      "id": "med-029",
+      "domain": "medical",
+      "question": "Synthesize evidence on whether population-level salt reduction programs lower cardiovascular mortality, contrasting WHO modelling with observational cohort findings.",
+      "citation_expectation": "WHO report plus cohort study DOIs"
+    },
+    {
+      "id": "med-030",
+      "domain": "medical",
+      "question": "Using primary sources, determine how the definition of sepsis changed between Sepsis-2 and Sepsis-3 and what validation studies reported about SOFA versus SIRS predictive performance.",
+      "citation_expectation": "consensus definition papers plus validation studies"
+    },
+    {
+      "id": "med-031",
+      "domain": "medical",
+      "question": "How do published estimates of measles vaccine effectiveness after one versus two doses vary across settings, and what does WHO's position paper conclude?",
+      "citation_expectation": "WHO position paper plus effectiveness studies"
+    },
+    {
+      "id": "med-032",
+      "domain": "medical",
+      "question": "Compare the pivotal evidence for the two approved RSV vaccines in older adults, including efficacy against lower respiratory tract disease and observed safety signals.",
+      "citation_expectation": "two pivotal trial publications plus regulatory reviews"
+    },
+    {
+      "id": "med-033",
+      "domain": "medical",
+      "question": "Synthesize the evidence on hydroxychloroquine for COVID-19 prophylaxis, and explain how the initially reported effects were resolved by later randomized trials.",
+      "citation_expectation": "randomized trial publications plus retraction record"
+    },
+    {
+      "id": "med-034",
+      "domain": "medical",
+      "question": "What does the combined evidence from renal-outcome trials say about SGLT2 inhibitors in non-diabetic chronic kidney disease, and how do DAPA-CKD and EMPA-KIDNEY differ in population?",
+      "citation_expectation": "two trial publications with DOIs"
+    },
+    {
+      "id": "med-035",
+      "domain": "medical",
+      "question": "Compare how the USPSTF and the American College of Obstetricians and Gynecologists frame the evidence for aspirin prophylaxis in preeclampsia risk reduction.",
+      "citation_expectation": "USPSTF statement plus ACOG practice advisory"
+    },
+    {
+      "id": "med-036",
+      "domain": "medical",
+      "question": "Using primary literature, quantify the reported incidence of myocarditis after mRNA COVID-19 vaccination by age and sex, and identify the two largest surveillance datasets.",
+      "citation_expectation": "national surveillance publications"
+    },
+    {
+      "id": "med-037",
+      "domain": "medical",
+      "question": "Synthesize what randomized evidence exists on the effect of intermittent fasting on HbA1c in type 2 diabetes, and note the limitations of trial duration.",
+      "citation_expectation": "randomized trial publications with DOIs"
+    },
+    {
+      "id": "med-038",
+      "domain": "medical",
+      "question": "How do published cost-effectiveness analyses of gene therapy for sickle cell disease differ in their assumptions, and what does ICER's assessment conclude?",
+      "citation_expectation": "ICER report plus published CEA"
+    },
+    {
+      "id": "med-039",
+      "domain": "medical",
+      "question": "Compare antimicrobial resistance burden estimates for 2019 from the GRAM study and WHO GLASS reporting, and explain the methodological divergence.",
+      "citation_expectation": "GRAM Lancet paper plus WHO GLASS report"
+    },
+    {
+      "id": "med-040",
+      "domain": "medical",
+      "question": "Assess how the evidence for tranexamic acid in traumatic brain injury evolved from CRASH-2 to CRASH-3, and what the subgroup findings support.",
+      "citation_expectation": "two trial publications with DOIs"
+    },
+    {
+      "id": "med-041",
+      "domain": "medical",
+      "question": "Is there credible randomized evidence that any intervention slows progression of idiopathic pulmonary fibrosis mortality, as opposed to lung-function decline? Characterize the evidence gap.",
+      "citation_expectation": "trial publications with explicit endpoint limitations"
+    },
+    {
+      "id": "med-042",
+      "domain": "medical",
+      "question": "What is the state of evidence on chronic fatigue syndrome / ME treatment following the withdrawal of graded exercise therapy recommendations, and why does the field remain contested?",
+      "citation_expectation": "NICE guideline plus published disputes"
+    },
+    {
+      "id": "med-043",
+      "domain": "medical",
+      "question": "Does published evidence establish a causal link between ultra-processed food consumption and all-cause mortality, or only association? Explain the limits.",
+      "citation_expectation": "cohort studies with confounding caveats"
+    },
+    {
+      "id": "med-044",
+      "domain": "medical",
+      "question": "What is known and unresolved about the long-term neurodevelopmental effects of general anesthesia exposure in children under three?",
+      "citation_expectation": "GAS/PANDA trial publications plus stated uncertainty"
+    },
+    {
+      "id": "med-045",
+      "domain": "medical",
+      "question": "Is the evidence sufficient to recommend psilocybin for treatment-resistant depression outside trials? Describe what phase 2/3 data show and what remains unknown.",
+      "citation_expectation": "trial publications with evidence-strength caveats"
+    },
+    {
+      "id": "med-046",
+      "domain": "medical",
+      "question": "How strong is the evidence linking microplastic exposure to human cardiovascular outcomes, and what methodological criticisms have been raised against the leading study?",
+      "citation_expectation": "primary study plus published critique"
+    },
+    {
+      "id": "med-047",
+      "domain": "medical",
+      "question": "What does the current evidence say about whether screening asymptomatic adults for atrial fibrillation with wearables improves clinical outcomes?",
+      "citation_expectation": "screening trials plus guideline statements on evidence gaps"
+    },
+    {
+      "id": "med-048",
+      "domain": "medical",
+      "question": "Is there reliable evidence on the incidence of post-treatment Lyme disease syndrome, and why do case definitions frustrate measurement?",
+      "citation_expectation": "published reviews acknowledging definitional problems"
+    },
+    {
+      "id": "med-049",
+      "domain": "medical",
+      "question": "How contested is the evidence that serotonin abnormalities underlie major depressive disorder, following the 2022 umbrella review and its rebuttals?",
+      "citation_expectation": "umbrella review plus published rebuttals"
+    },
+    {
+      "id": "med-050",
+      "domain": "medical",
+      "question": "What can and cannot be concluded from published data about the effectiveness of school mask mandates on pediatric SARS-CoV-2 transmission?",
+      "citation_expectation": "observational studies plus stated confounding limits"
+    },
+    {
+      "id": "leg-001",
+      "domain": "legal",
+      "question": "In Loper Bright Enterprises v. Department of Commerce, what did the Supreme Court hold about Chevron deference, and which prior decision did it expressly overrule?",
+      "citation_expectation": "US Supreme Court opinion citation"
+    },
+    {
+      "id": "leg-002",
+      "domain": "legal",
+      "question": "What does Article 22 of the EU General Data Protection Regulation provide regarding automated individual decision-making, and what exceptions does it enumerate?",
+      "citation_expectation": "EUR-Lex GDPR article text"
+    },
+    {
+      "id": "leg-003",
+      "domain": "legal",
+      "question": "Under 17 U.S.C. 512(c), what specific elements must a takedown notification contain to be effective, and where are they enumerated?",
+      "citation_expectation": "17 U.S.C. 512(c)(3) statutory text"
+    },
+    {
+      "id": "leg-004",
+      "domain": "legal",
+      "question": "What test did the Supreme Court articulate in Andy Warhol Foundation v. Goldsmith for the first fair-use factor, and how did it treat the purpose-and-character inquiry?",
+      "citation_expectation": "Supreme Court opinion citation"
+    },
+    {
+      "id": "leg-005",
+      "domain": "legal",
+      "question": "What risk categories does the EU AI Act establish, and which article lists the prohibited AI practices?",
+      "citation_expectation": "EU AI Act article text on EUR-Lex"
+    },
+    {
+      "id": "leg-006",
+      "domain": "legal",
+      "question": "Under Federal Rule of Civil Procedure 23(b)(3), what two findings must a court make to certify a damages class, and what is the text of the predominance requirement?",
+      "citation_expectation": "FRCP 23(b)(3) rule text"
+    },
+    {
+      "id": "leg-007",
+      "domain": "legal",
+      "question": "What did the Ninth Circuit hold in hiQ Labs v. LinkedIn on remand after Van Buren regarding the Computer Fraud and Abuse Act's 'without authorization' element?",
+      "citation_expectation": "Ninth Circuit opinion citation"
+    },
+    {
+      "id": "leg-008",
+      "domain": "legal",
+      "question": "What notice period and content does the California Consumer Privacy Act, as amended by the CPRA, require before a business may collect sensitive personal information, and which regulation section governs?",
+      "citation_expectation": "CCPA regulations section citation"
+    },
+    {
+      "id": "leg-009",
+      "domain": "legal",
+      "question": "Under Article 6 of the Berne Convention as revised at Paris in 1971, what moral rights are protected and for how long must protection persist?",
+      "citation_expectation": "Berne Convention article text via WIPO"
+    },
+    {
+      "id": "leg-010",
+      "domain": "legal",
+      "question": "What standard does 35 U.S.C. 101 jurisprudence apply after Alice Corp. v. CLS Bank, and what two steps did the Court prescribe?",
+      "citation_expectation": "Supreme Court opinion plus USPTO guidance"
+    },
+    {
+      "id": "leg-011",
+      "domain": "legal",
+      "question": "What does Section 230(c)(1) of the Communications Decency Act say verbatim, and which subsection contains the Good Samaritan provision?",
+      "citation_expectation": "47 U.S.C. 230 statutory text"
+    },
+    {
+      "id": "leg-012",
+      "domain": "legal",
+      "question": "In the ICJ's 2024 advisory proceedings on Israel's policies in the occupied Palestinian territory, what question did the General Assembly refer to the court and under which resolution?",
+      "citation_expectation": "UN General Assembly resolution and ICJ docket entry"
+    },
+    {
+      "id": "leg-013",
+      "domain": "legal",
+      "question": "What did the Court of Justice of the European Union hold in Schrems II regarding the EU-US Privacy Shield and standard contractual clauses?",
+      "citation_expectation": "CJEU judgment case number"
+    },
+    {
+      "id": "leg-014",
+      "domain": "legal",
+      "question": "Under the UK Bribery Act 2010, what is the 'adequate procedures' defence, in which section does it appear, and what guidance does the Ministry of Justice provide?",
+      "citation_expectation": "UK statute section plus MoJ guidance"
+    },
+    {
+      "id": "leg-015",
+      "domain": "legal",
+      "question": "What does Rule 8.4(g) of the ABA Model Rules of Professional Conduct prohibit, and what comment language qualifies its scope?",
+      "citation_expectation": "ABA Model Rule text and comment"
+    },
+    {
+      "id": "leg-016",
+      "domain": "legal",
+      "question": "What remedies did the DOJ seek in its proposed final judgment in United States v. Google (search), and which specific conduct remedies were requested?",
+      "citation_expectation": "court docket filing in the DDC case"
+    },
+    {
+      "id": "leg-017",
+      "domain": "legal",
+      "question": "Under Article 82 of the GDPR and the CJEU case law interpreting it, what must a claimant show to obtain non-material damages?",
+      "citation_expectation": "GDPR article plus CJEU judgments"
+    },
+    {
+      "id": "leg-018",
+      "domain": "legal",
+      "question": "What did the Supreme Court hold in Students for Fair Admissions v. Harvard about the Equal Protection Clause and race-conscious admissions, and what carve-out did the opinion note?",
+      "citation_expectation": "Supreme Court opinion citation"
+    },
+    {
+      "id": "leg-019",
+      "domain": "legal",
+      "question": "What are the elements of the Digital Markets Act's 'gatekeeper' designation thresholds, and which article specifies the quantitative criteria?",
+      "citation_expectation": "EU Regulation 2022/1925 article text"
+    },
+    {
+      "id": "leg-020",
+      "domain": "legal",
+      "question": "Under the Federal Arbitration Act as interpreted in Epic Systems v. Lewis, what did the Court decide about class-action waivers in employment arbitration agreements?",
+      "citation_expectation": "Supreme Court opinion citation"
+    },
+    {
+      "id": "leg-021",
+      "domain": "legal",
+      "question": "Synthesize how US circuit courts have split on whether website accessibility falls under Title III of the ADA absent a physical nexus, citing decisions on each side.",
+      "citation_expectation": "multiple circuit court opinions"
+    },
+    {
+      "id": "leg-022",
+      "domain": "legal",
+      "question": "Compare how the EU AI Act and Colorado's AI consumer protection statute define high-risk automated decision systems and where the obligations diverge.",
+      "citation_expectation": "EU regulation plus state statute text"
+    },
+    {
+      "id": "leg-023",
+      "domain": "legal",
+      "question": "How have US courts treated the copyrightability of AI-generated works, synthesizing the Copyright Office's registration guidance with Thaler v. Perlmutter?",
+      "citation_expectation": "Copyright Office guidance plus district court opinion"
+    },
+    {
+      "id": "leg-024",
+      "domain": "legal",
+      "question": "Trace how the doctrine of standing in data breach litigation diverged among circuits after TransUnion v. Ramirez, citing at least two conflicting appellate decisions.",
+      "citation_expectation": "Supreme Court plus circuit opinions"
+    },
+    {
+      "id": "leg-025",
+      "domain": "legal",
+      "question": "Compare the noncompete restrictions in the FTC's 2024 rule with California Business and Professions Code 16600, and identify what the rule would have preempted.",
+      "citation_expectation": "FTC final rule plus state statute"
+    },
+    {
+      "id": "leg-026",
+      "domain": "legal",
+      "question": "Synthesize how the EU's DSA and the UK Online Safety Act differ in their obligations for very large online platforms regarding risk assessment and audit.",
+      "citation_expectation": "two statutes/regulations with article and section references"
+    },
+    {
+      "id": "leg-027",
+      "domain": "legal",
+      "question": "How do published court decisions treat trade-secret claims over machine learning model weights, and what is the current state of authority?",
+      "citation_expectation": "court opinions plus statutory DTSA text"
+    },
+    {
+      "id": "leg-028",
+      "domain": "legal",
+      "question": "Compare the standards for issuing preliminary injunctions in patent cases in the US Federal Circuit and the Unified Patent Court's published decisions.",
+      "citation_expectation": "Federal Circuit precedent plus UPC decisions"
+    },
+    {
+      "id": "leg-029",
+      "domain": "legal",
+      "question": "Synthesize what obligations arise under both the SEC climate disclosure rule and the EU CSRD for a dual-listed issuer, and where the reporting scopes conflict.",
+      "citation_expectation": "SEC final rule plus EU directive text"
+    },
+    {
+      "id": "leg-030",
+      "domain": "legal",
+      "question": "How has the interpretation of 'material support' under 18 U.S.C. 2339B evolved from Holder v. Humanitarian Law Project through later appellate decisions?",
+      "citation_expectation": "Supreme Court plus appellate opinions"
+    },
+    {
+      "id": "leg-031",
+      "domain": "legal",
+      "question": "Compare how Illinois BIPA and Texas CUBI differ in private right of action and damages, citing statutory text and a leading decision under each.",
+      "citation_expectation": "two state statutes plus case law"
+    },
+    {
+      "id": "leg-032",
+      "domain": "legal",
+      "question": "Synthesize the current law on cross-border data access, contrasting the US CLOUD Act with the EU e-Evidence Regulation.",
+      "citation_expectation": "US statute plus EU regulation text"
+    },
+    {
+      "id": "leg-033",
+      "domain": "legal",
+      "question": "How do the ICC's and the ICJ's published jurisdictional bases differ for cases arising from the same conflict, using a specific documented example?",
+      "citation_expectation": "ICC and ICJ primary documents"
+    },
+    {
+      "id": "leg-034",
+      "domain": "legal",
+      "question": "Compare the safe harbor provisions for platform liability in India's IT Rules 2021 with those in the EU DSA, citing the operative provisions.",
+      "citation_expectation": "Indian rules plus EU regulation text"
+    },
+    {
+      "id": "leg-035",
+      "domain": "legal",
+      "question": "Trace how courts have applied the major questions doctrine after West Virginia v. EPA in at least two subsequent agency-authority cases.",
+      "citation_expectation": "Supreme Court plus subsequent opinions"
+    },
+    {
+      "id": "leg-036",
+      "domain": "legal",
+      "question": "Synthesize the requirements for a valid transfer impact assessment under GDPR Chapter V, drawing on EDPB recommendations and the SCC text itself.",
+      "citation_expectation": "EDPB recommendations plus SCC decision text"
+    },
+    {
+      "id": "leg-037",
+      "domain": "legal",
+      "question": "How do the US and EU differ in the legal treatment of pay-for-delay pharmaceutical settlements, citing FTC v. Actavis and the CJEU's Generics UK decision?",
+      "citation_expectation": "two apex court opinions"
+    },
+    {
+      "id": "leg-038",
+      "domain": "legal",
+      "question": "Compare the fiduciary duty standards applied to Delaware corporations and Delaware public benefit corporations under the DGCL, citing statutory sections and case law.",
+      "citation_expectation": "DGCL sections plus Chancery opinions"
+    },
+    {
+      "id": "leg-039",
+      "domain": "legal",
+      "question": "Synthesize what published enforcement actions establish about the FCPA's treatment of third-party intermediaries, citing at least two resolutions.",
+      "citation_expectation": "DOJ/SEC enforcement documents"
+    },
+    {
+      "id": "leg-040",
+      "domain": "legal",
+      "question": "How do international arbitration rules differ between ICSID and the UNCITRAL rules on third-party funding disclosure, per the current rule texts?",
+      "citation_expectation": "ICSID and UNCITRAL rule texts"
+    },
+    {
+      "id": "leg-041",
+      "domain": "legal",
+      "question": "Is the legality of training generative models on copyrighted works settled in any jurisdiction? Characterize what is decided and what remains open.",
+      "citation_expectation": "pending case dockets with explicit unsettled-law statement"
+    },
+    {
+      "id": "leg-042",
+      "domain": "legal",
+      "question": "What is the current legal status of 'right to repair' obligations for software-locked devices in the US, and why is authority thin?",
+      "citation_expectation": "state statutes and FTC materials, with gaps noted"
+    },
+    {
+      "id": "leg-043",
+      "domain": "legal",
+      "question": "Do published sources establish whether algorithmic pricing coordination violates Section 1 of the Sherman Act absent explicit agreement? Explain the contested state of authority.",
+      "citation_expectation": "district court opinions plus agency statements of interest"
+    },
+    {
+      "id": "leg-044",
+      "domain": "legal",
+      "question": "How contested is the enforceability of browsewrap terms of service in US courts, and which factual factors drive divergent outcomes?",
+      "citation_expectation": "conflicting appellate opinions"
+    },
+    {
+      "id": "leg-045",
+      "domain": "legal",
+      "question": "What is the state of the law on personal jurisdiction over foreign data-processing entities based solely on website accessibility? Identify why authority is unsettled.",
+      "citation_expectation": "conflicting decisions with unsettled-law caveat"
+    },
+    {
+      "id": "leg-046",
+      "domain": "legal",
+      "question": "Is there authoritative guidance on whether pseudonymized data under GDPR remains personal data in all circumstances, and where do regulators disagree?",
+      "citation_expectation": "EDPB/CJEU materials plus regulator divergence"
+    },
+    {
+      "id": "leg-047",
+      "domain": "legal",
+      "question": "What does the record establish about the enforceability of climate-related tort claims against fossil fuel producers in US state courts, and why is outcome prediction unreliable?",
+      "citation_expectation": "pending case dockets with explicit uncertainty"
+    },
+    {
+      "id": "leg-048",
+      "domain": "legal",
+      "question": "How settled is the question of whether smart-contract code alone can satisfy statute-of-frauds writing requirements? Describe the available authority.",
+      "citation_expectation": "state statutes plus commentary, with thin-authority statement"
+    },
+    {
+      "id": "leg-049",
+      "domain": "legal",
+      "question": "Is there consistent authority on when an AI system's output can trigger product liability rather than negligence? Explain what remains unresolved.",
+      "citation_expectation": "scholarly analysis plus limited case law"
+    },
+    {
+      "id": "leg-050",
+      "domain": "legal",
+      "question": "What can be established about the legal status of cross-border enforcement of EU DSA fines against non-EU platforms, and what is untested?",
+      "citation_expectation": "regulation text plus explicit untested-enforcement caveat"
+    },
+    {
+      "id": "tec-001",
+      "domain": "technical",
+      "question": "In RFC 8446 (TLS 1.3), which handshake messages are encrypted under the handshake traffic keys, and which section specifies the key schedule derivation using HKDF-Expand-Label?",
+      "citation_expectation": "RFC 8446 section reference"
+    },
+    {
+      "id": "tec-002",
+      "domain": "technical",
+      "question": "What does RFC 8785 define as the number-serialization rule for JSON Canonicalization Scheme, and how does it handle values that are integers exactly representable in IEEE 754 double precision?",
+      "citation_expectation": "RFC 8785 section text"
+    },
+    {
+      "id": "tec-003",
+      "domain": "technical",
+      "question": "In the HTTP/2 specification (RFC 9113), what is the default value of SETTINGS_MAX_CONCURRENT_STREAMS and what does the specification say about advertising no limit?",
+      "citation_expectation": "RFC 9113 section reference"
+    },
+    {
+      "id": "tec-004",
+      "domain": "technical",
+      "question": "What signature algorithm identifier does RFC 8037 register for Ed25519 in JOSE, and what curve parameter value must appear in the JWK 'crv' field?",
+      "citation_expectation": "RFC 8037 section text"
+    },
+    {
+      "id": "tec-005",
+      "domain": "technical",
+      "question": "Per the POSIX.1-2017 specification, what is the required behavior of write() on a regular file when O_APPEND is set, with respect to atomicity of the offset update?",
+      "citation_expectation": "POSIX.1-2017 specification page"
+    },
+    {
+      "id": "tec-006",
+      "domain": "technical",
+      "question": "In the Linux kernel documentation for the completely fair scheduler's successor EEVDF, what scheduling latency parameter replaced sched_latency_ns and in which kernel release did EEVDF merge?",
+      "citation_expectation": "kernel documentation and merge commit"
+    },
+    {
+      "id": "tec-007",
+      "domain": "technical",
+      "question": "What consistency guarantee does the Raft paper specify for a leader serving read-only queries, and what two mechanisms does it describe to make such reads linearizable?",
+      "citation_expectation": "Raft paper section (Ongaro & Ousterhout)"
+    },
+    {
+      "id": "tec-008",
+      "domain": "technical",
+      "question": "In the C++20 standard, what does the memory model specify for a relaxed atomic load with respect to happens-before, and which clause governs it?",
+      "citation_expectation": "ISO C++ standard clause or open working draft"
+    },
+    {
+      "id": "tec-009",
+      "domain": "technical",
+      "question": "What does the QUIC specification (RFC 9000) mandate for the initial congestion window and the minimum datagram size for Initial packets?",
+      "citation_expectation": "RFC 9000/9002 section references"
+    },
+    {
+      "id": "tec-010",
+      "domain": "technical",
+      "question": "According to the CVE record and vendor advisory for Log4Shell, what is the CVE identifier, the CVSS v3.1 base score, and which Log4j versions are affected?",
+      "citation_expectation": "NVD CVE record"
+    },
+    {
+      "id": "tec-011",
+      "domain": "technical",
+      "question": "In the Unicode Standard, what normalization form does UAX #15 specify as canonical decomposition followed by canonical composition, and what stability guarantee is documented for normalization across Unicode versions?",
+      "citation_expectation": "Unicode Annex UAX #15"
+    },
+    {
+      "id": "tec-012",
+      "domain": "technical",
+      "question": "What does the Kubernetes API reference specify as the default terminationGracePeriodSeconds for a Pod, and what happens to a container that has not exited when the period elapses?",
+      "citation_expectation": "Kubernetes official API reference"
+    },
+    {
+      "id": "tec-013",
+      "domain": "technical",
+      "question": "In PostgreSQL, what isolation anomaly is permitted under REPEATABLE READ per the official documentation, and how does PostgreSQL's implementation differ from the SQL standard's definition?",
+      "citation_expectation": "PostgreSQL documentation transaction isolation chapter"
+    },
+    {
+      "id": "tec-014",
+      "domain": "technical",
+      "question": "What does the NIST FIPS 203 standard specify as the parameter sets for ML-KEM, including the claimed security category for each?",
+      "citation_expectation": "NIST FIPS 203 published standard"
+    },
+    {
+      "id": "tec-015",
+      "domain": "technical",
+      "question": "In the WebAssembly core specification 2.0, what does the validation rule for the memory.grow instruction require, and what value is returned on failure?",
+      "citation_expectation": "W3C WebAssembly specification section"
+    },
+    {
+      "id": "tec-016",
+      "domain": "technical",
+      "question": "Per RFC 9110, which HTTP methods are defined as idempotent, and what does the specification say about the idempotency of POST?",
+      "citation_expectation": "RFC 9110 method definitions section"
+    },
+    {
+      "id": "tec-017",
+      "domain": "technical",
+      "question": "What does the Ed25519 specification RFC 8032 require regarding the check for small-order points during verification, and how does that differ from the cofactorless verification equation?",
+      "citation_expectation": "RFC 8032 section text"
+    },
+    {
+      "id": "tec-018",
+      "domain": "technical",
+      "question": "In the Git documentation, what object types exist in the object database and what exact header format precedes the content when computing an object's SHA-1?",
+      "citation_expectation": "Git internals documentation"
+    },
+    {
+      "id": "tec-019",
+      "domain": "technical",
+      "question": "What does the OpenTelemetry specification define as the required semantic convention attributes for an HTTP server span, and which version of the semantic conventions marked them stable?",
+      "citation_expectation": "OpenTelemetry specification and semantic conventions release"
+    },
+    {
+      "id": "tec-020",
+      "domain": "technical",
+      "question": "Per the Intel Software Developer's Manual, what memory ordering guarantee does x86-64 provide for stores relative to loads, and which section documents the store-buffer forwarding rule?",
+      "citation_expectation": "Intel SDM volume and section"
+    },
+    {
+      "id": "tec-021",
+      "domain": "technical",
+      "question": "Synthesize how the published designs of Raft and Paxos differ in leader election and log matching, drawing on both original papers, and identify where the Raft authors' claims about understandability were empirically tested.",
+      "citation_expectation": "two original papers plus user study"
+    },
+    {
+      "id": "tec-022",
+      "domain": "technical",
+      "question": "Compare the specified behavior of TCP BBRv1 and BBRv2 under shallow buffers using the published design documents and independent measurement studies.",
+      "citation_expectation": "Google BBR documents plus independent measurement paper"
+    },
+    {
+      "id": "tec-023",
+      "domain": "technical",
+      "question": "How do the CPython and PyPy documented approaches to reference counting versus tracing garbage collection differ in observable finalization semantics, per each project's documentation?",
+      "citation_expectation": "CPython and PyPy documentation"
+    },
+    {
+      "id": "tec-024",
+      "domain": "technical",
+      "question": "Using the specifications for HTTP/3 and HTTP/2, determine which head-of-line blocking problems remain and which are eliminated, citing the relevant RFC sections for each.",
+      "citation_expectation": "RFC 9114 and RFC 9113 sections"
+    },
+    {
+      "id": "tec-025",
+      "domain": "technical",
+      "question": "Reconcile the documented durability guarantees of fsync on Linux ext4 with the reported behavior after write errors, citing kernel documentation and the published analysis of fsync error handling.",
+      "citation_expectation": "kernel documentation plus peer-reviewed analysis"
+    },
+    {
+      "id": "tec-026",
+      "domain": "technical",
+      "question": "Compare the memory-safety guarantees claimed for Rust's safe subset with the documented soundness holes tracked by the project, and characterize what the guarantees exclude.",
+      "citation_expectation": "Rust reference plus project issue tracker records"
+    },
+    {
+      "id": "tec-027",
+      "domain": "technical",
+      "question": "Synthesize what the published records of the Spectre and Meltdown disclosures establish about which mitigations were required in hardware versus software, citing the original papers and vendor advisories.",
+      "citation_expectation": "original papers plus vendor advisories"
+    },
+    {
+      "id": "tec-028",
+      "domain": "technical",
+      "question": "How do the S3 and Google Cloud Storage documented consistency models compare after both moved to strong read-after-write consistency, and what operations remain eventually consistent per each vendor's documentation?",
+      "citation_expectation": "two vendor documentation pages"
+    },
+    {
+      "id": "tec-029",
+      "domain": "technical",
+      "question": "Combining the SLSA framework specification and the in-toto attestation format, describe what artifacts a level 3 build must produce and how the provenance is verified.",
+      "citation_expectation": "SLSA specification plus in-toto spec"
+    },
+    {
+      "id": "tec-030",
+      "domain": "technical",
+      "question": "Compare the documented isolation properties of gVisor and Firecracker, using each project's design documentation, and identify the differing threat models.",
+      "citation_expectation": "two project design documents"
+    },
+    {
+      "id": "tec-031",
+      "domain": "technical",
+      "question": "Using the published Jepsen analyses and vendor responses, describe what consistency violations were found in one distributed database and how the vendor's documentation changed afterward.",
+      "citation_expectation": "Jepsen report plus vendor documentation diff"
+    },
+    {
+      "id": "tec-032",
+      "domain": "technical",
+      "question": "Synthesize the specified requirements for a compliant OAuth 2.1 public client, drawing on the OAuth 2.1 draft and RFC 7636, and note what changed relative to OAuth 2.0.",
+      "citation_expectation": "OAuth 2.1 draft plus RFC 7636"
+    },
+    {
+      "id": "tec-033",
+      "domain": "technical",
+      "question": "How do the published NIST post-quantum migration guidance and the IETF's hybrid key exchange drafts differ in recommended transition strategy for TLS?",
+      "citation_expectation": "NIST publication plus IETF draft"
+    },
+    {
+      "id": "tec-034",
+      "domain": "technical",
+      "question": "Compare the documented approaches of Zstandard and Brotli to dictionary compression and the published benchmark results on the Silesia corpus.",
+      "citation_expectation": "format RFCs plus benchmark publications"
+    },
+    {
+      "id": "tec-035",
+      "domain": "technical",
+      "question": "Synthesize evidence on whether formal verification of an OS kernel eliminates a defined class of bugs, using the seL4 verification papers and the documented assumptions of the proof.",
+      "citation_expectation": "seL4 papers with stated proof assumptions"
+    },
+    {
+      "id": "tec-036",
+      "domain": "technical",
+      "question": "Using the CBOR and Protocol Buffers specifications, compare how each encodes optional fields and what wire-compatibility guarantees each documents across schema evolution.",
+      "citation_expectation": "RFC 8949 plus protobuf specification"
+    },
+    {
+      "id": "tec-037",
+      "domain": "technical",
+      "question": "How do the published reproducible-builds project findings and Debian's official statistics characterize the fraction of packages that reproduce bit-for-bit, and what causes the remainder to fail?",
+      "citation_expectation": "project statistics page plus technical write-ups"
+    },
+    {
+      "id": "tec-038",
+      "domain": "technical",
+      "question": "Compare the documented scheduling and isolation guarantees of cgroups v2 CPU controllers with those the Kubernetes documentation claims for CPU limits, and identify the mismatch that causes throttling.",
+      "citation_expectation": "kernel cgroups v2 docs plus Kubernetes docs"
+    },
+    {
+      "id": "tec-039",
+      "domain": "technical",
+      "question": "Synthesize the published analyses of the xz-utils supply chain compromise: what was the CVE, what mechanism achieved the backdoor, and which distributions were affected per their advisories?",
+      "citation_expectation": "CVE record plus distribution advisories"
+    },
+    {
+      "id": "tec-040",
+      "domain": "technical",
+      "question": "Using the DNSSEC RFCs and measurement studies, determine what fraction of resolvers validate signatures and which RFC defines the DS record digest algorithms.",
+      "citation_expectation": "RFC sections plus measurement study"
+    },
+    {
+      "id": "tec-041",
+      "domain": "technical",
+      "question": "Is there rigorous published evidence that any specific programming language choice reduces defect density in production software? Characterize why the evidence is weak.",
+      "citation_expectation": "empirical studies plus published critiques of methodology"
+    },
+    {
+      "id": "tec-042",
+      "domain": "technical",
+      "question": "Does published evidence establish that microservice architectures improve deployment frequency independent of organizational factors? Explain what is unresolved.",
+      "citation_expectation": "empirical software engineering studies with confounding caveats"
+    },
+    {
+      "id": "tec-043",
+      "domain": "technical",
+      "question": "What is the state of evidence on whether AI coding assistants reduce defect rates in real codebases, and why are the existing studies contested?",
+      "citation_expectation": "published studies plus methodological criticisms"
+    },
+    {
+      "id": "tec-044",
+      "domain": "technical",
+      "question": "Is there reliable public evidence on the real-world energy consumption per inference of large language models? Describe the limits of what can be verified.",
+      "citation_expectation": "published estimates with explicit uncertainty"
+    },
+    {
+      "id": "tec-045",
+      "domain": "technical",
+      "question": "Do published measurements settle whether IPv6 deployment measurably reduces end-to-end latency compared with IPv4 on the same paths? Explain the disagreement.",
+      "citation_expectation": "conflicting measurement studies"
+    },
+    {
+      "id": "tec-046",
+      "domain": "technical",
+      "question": "How strong is the evidence that fuzzing coverage metrics predict real vulnerability discovery, and which published critiques challenge the standard evaluation practice?",
+      "citation_expectation": "evaluation papers plus critique papers"
+    },
+    {
+      "id": "tec-047",
+      "domain": "technical",
+      "question": "Is there credible evidence about the residual exploitability of speculative-execution side channels on current hardware after deployed mitigations? Characterize the uncertainty.",
+      "citation_expectation": "research papers plus vendor statements, with gaps noted"
+    },
+    {
+      "id": "tec-048",
+      "domain": "technical",
+      "question": "What can and cannot be concluded from published data about whether formal SBOM adoption has reduced exploited vulnerability incidents?",
+      "citation_expectation": "policy documents plus explicit evidence-gap statement"
+    },
+    {
+      "id": "tec-049",
+      "domain": "technical",
+      "question": "Is the claim that quantum computers will break RSA-2048 within a stated timeframe supported by published resource estimates, and how widely do the estimates vary?",
+      "citation_expectation": "resource-estimate papers with divergent assumptions"
+    },
+    {
+      "id": "tec-050",
+      "domain": "technical",
+      "question": "Does the published record establish whether eBPF-based observability imposes lower production overhead than sampling profilers? Explain why measurements conflict.",
+      "citation_expectation": "benchmark publications with conflicting results"
+    }
+  ]
 }
