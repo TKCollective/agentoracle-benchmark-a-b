@@ -180,6 +180,70 @@ JSONL. A reader can verify offline that the published gate decisions are the
 ones actually issued, without trusting our copy of the data. The
 experiment's evidence is held to the standard the experiment is about.
 
+## Model substitution amendment
+
+**Dated 2026-08-19. Published before the first run and before any data
+collection, under the deviation rule stated in this document.**
+
+The design named three model families: GPT-5.6, kimi-k3, and claude-sonnet-5.
+At pinning time, **kimi-k3 could not satisfy the selection rule published
+above.**
+
+Moonshot's model documentation states no versioning or pinning guarantee, does
+not say whether weights or configuration may change under the same model id, and
+publishes no dated snapshot ids for `kimi-k3`
+([platform.kimi.ai/docs/models](https://platform.kimi.ai/docs/models)). We
+therefore cannot assert that `kimi-k3` on 2026-08-26 is the same artifact as
+`kimi-k3` on 2026-08-19. The rule decides the case: *"A model that cannot be
+pinned for the duration cannot carry a pre-registered result."*
+
+The same page announces a full platform sunset on 2026-08-31 for `kimi-k2.5` and
+the `moonshot-v1` series — four days after this run window closes. That is not K3
+itself, but it establishes a provider that retires model ids on short public
+notice, which is the risk this rule exists to exclude.
+
+**Considered and rejected for this run.** K3 open weights were published
+2026-07-26 under a Modified MIT license, and a specific weights revision is
+content-addressable and therefore strictly more pinnable than any hosted id.
+Running open weights is different infrastructure than the hosted-API client this
+harness implements, so it is out of scope for this run rather than unattractive.
+
+**Substituted: `mistral-medium-3-5`** — General Availability, version string
+`GAv26.04`, released 2026-04-28, 256k context. It satisfies the rule on stronger
+evidence than the incumbent pins. Mistral publishes a lifecycle policy stating
+that General Availability models *"Receive no silent updates"*, documents the
+`model-name-major-minor` form as a *"Fixed major and minor version"*, and
+instructs: *"For precise control, pin your deployment to a specific major.minor
+version identifier."* The GA deprecation notice period is six months, so the
+model cannot be withdrawn inside this window, and retirement fails loudly —
+*"Once retired, requests to its identifiers fail with a 404 error"* — rather than
+by silent substitution
+([docs.mistral.ai/inference/model-lifecycle](https://docs.mistral.ai/inference/model-lifecycle)).
+
+Selection contains no benchmark-performance reasoning, per the rule. This model
+was not chosen because it scores well; it was chosen because its pinning is
+documented rather than assumed. One additional property is worth recording
+without treating it as a criterion: because the weights are published under a
+Modified MIT license, the exact artifact is independently obtainable, so a third
+party can recompute against the same model rather than trusting our
+description of it.
+
+**Also corrected in the same commit.** The configuration named `gpt-5.6`, which
+is an **alias** — the provider's changelog states *"the `gpt-5.6` alias routes
+requests to `gpt-5.6-sol`."* Pinning an alias would have violated this same
+rule, silently, since an alias can be repointed mid-window. The pin is now
+`gpt-5.6-sol`. **Disclosed limit:** no dated snapshot is published for that
+model, so the model id is the finest pinning granularity the provider offers, and
+we pin what is pinnable rather than implying more precision than exists.
+
+The harness now **refuses to run** if any pin matches a known provider alias,
+rather than warning. A misconfigured alias cannot carry a pre-registered result.
+
+This amendment follows the standard applied to the gate-accuracy metric and the
+question-set freeze: a constraint discovered before any data exists is published
+as a dated deviation, never absorbed silently. No question had been run through
+either agent at the time of this entry.
+
 ## Question-set freeze amendment
 
 **Dated 2026-08-17. Published before the first run and before any data

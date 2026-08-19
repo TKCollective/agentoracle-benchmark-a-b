@@ -169,6 +169,18 @@ class FixtureModelClient(BaseModelClient):
         )
 
 
+# Provider aliases that must never appear as a pin. Each value explains what the
+# alias resolves to, so the error message is actionable rather than cryptic.
+_PROHIBITED_ALIASES: Dict[str, str] = {
+    "gpt-5.6": "It routes to gpt-5.6-sol and can be repointed by the provider.",
+    "gpt-5.6-chat-latest": "A -latest channel; the provider updates it regularly.",
+    "mistral-medium-latest": "Resolves to the latest GA version across generations.",
+    "mistral-medium-3": "Resolves to the latest minor version of that major generation.",
+    "claude-sonnet-4-5": "A convenience alias to the most recent dated snapshot.",
+    "kimi-latest": "A moving pointer; discontinued 2026-01-28.",
+}
+
+
 @dataclass
 class LiveModelClient(BaseModelClient):
     """Live provider path. Refuses to operate without a pin and a key."""
@@ -185,10 +197,22 @@ class LiveModelClient(BaseModelClient):
                 "the pre-registration requires exact pins before the first live run "
                 "(docs/model-independence.md, selection rule). Use --dry-run until pins land."
             )
+        # Aliases are prohibited by the selection rule: a provider can repoint
+        # an alias mid-window, which is the failure the rule exists to exclude.
+        # Refuse rather than warn, so a misconfigured alias cannot silently
+        # carry a pre-registered result.
+        if self.spec.pin in _PROHIBITED_ALIASES:
+            raise ModelConfigError(
+                f"{self.spec.pin!r} is a provider ALIAS, not a pinned snapshot. "
+                f"{_PROHIBITED_ALIASES[self.spec.pin]} "
+                "The pre-registration selection rule requires an exact pin "
+                "(docs/pre-registration.md). Refusing to run."
+            )
         env_var = {
             "openai": "OPENAI_API_KEY",
             "anthropic": "ANTHROPIC_API_KEY",
             "moonshot": "MOONSHOT_API_KEY",
+            "mistral": "MISTRAL_API_KEY",
         }.get(self.spec.family, "MODEL_API_KEY")
         self.api_key = self.api_key or os.environ.get(env_var, "")
         if not self.api_key:

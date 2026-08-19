@@ -1,16 +1,77 @@
 # Base models driving both agents. Same config for U and G — the gate is
 # the only variable.
 #
-# Three provider families. Exact version pins land in the lockfile before the
-# first run (target 2026-08-17). Selected for documented API availability and
-# pinnability through the run window, not benchmark rank.
+# PINS LOCKED 2026-08-19, before the first run and before any data collection.
+#
+# Selection rule, verbatim from docs/pre-registration.md:
+#   "Models are selected for documented API availability and version pinning
+#    through the run window — not benchmark rank. A model that cannot be pinned
+#    for the duration cannot carry a pre-registered result."
+#
+# Two tests only. No benchmark-performance reasoning appears in any note below.
+#   1. Is the identifier documented by the provider as available?
+#   2. Can it be held stable through 2026-08-26 (run window close)?
+#
+# ALIASES ARE PROHIBITED in this file and in the adapters. An alias can be
+# silently repointed by the provider mid-window, which is exactly the failure
+# the rule excludes. Each entry records the alias it must not be confused with.
+#
+# One substitution was required. See "Model substitution amendment" in
+# docs/pre-registration.md — kimi-k3 could not satisfy test 2 and was replaced
+# by mistral-medium-3-5 as a dated, published deviation.
 models:
   - family: openai
-    model: gpt-5.6
-    pin: null      # exact snapshot id pinned at harness completion
-  - family: moonshot
-    model: kimi-k3
-    pin: null
+    model: gpt-5.6-sol
+    pin: gpt-5.6-sol
+    pin_kind: dateless_snapshot
+    avoid_alias: gpt-5.6
+    # Test 1: listed on the provider's model page, whose snapshot section states
+    #   "Snapshots let you lock in a specific version of the model so that
+    #    performance and behavior remain consistent."
+    # Test 2: OpenAI's deprecation policy guarantees at least 6 months for
+    #   generally available models, and gpt-5.6-sol is currently named as the
+    #   recommended replacement for models retiring 2026-12-11, so it is not
+    #   itself scheduled for retirement inside this window.
+    # DISCLOSED LIMIT: no dated snapshot is published for this model, so this
+    #   identifier is the finest pinning granularity the provider offers. The
+    #   config previously read `gpt-5.6`, which is an ALIAS — the provider's
+    #   changelog states "the `gpt-5.6` alias routes requests to `gpt-5.6-sol`".
+    #   Pinning that alias would have violated the selection rule.
+    source: https://developers.openai.com/api/docs/models/gpt-5.6-sol
+
   - family: anthropic
     model: claude-sonnet-5
-    pin: null
+    pin: claude-sonnet-5
+    pin_kind: dateless_snapshot_written_immutability
+    # Test 1: GA since 2026-06-30; Bedrock model card lists "Model EOL date: N/A".
+    # Test 2: provider states in writing, "Each Claude model ID identifies a
+    #   pinned version of the model. When you use a model ID in an API request,
+    #   the underlying model remains constant for the lifetime of that ID," and
+    #   addresses the dateless format directly: "the dateless ID is the canonical
+    #   model ID for that release. It maps to a single, fixed model snapshot.
+    #   Anthropic does not update the weights or configuration of an existing
+    #   model ID."
+    source: https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions
+
+  - family: mistral
+    model: mistral-medium-3-5
+    pin: mistral-medium-3-5
+    pin_kind: fixed_major_minor_GA
+    avoid_alias:
+      - mistral-medium-latest   # latest GA across generations
+      - mistral-medium-3        # latest minor of that major generation
+    substituted_for: kimi-k3
+    deviation: docs/pre-registration.md — "Model substitution amendment", 2026-08-19
+    # Test 1: released 2026-04-28, version string GAv26.04, context 256k.
+    # Test 2: the provider publishes a lifecycle policy stating General
+    #   Availability models "Receive no silent updates", documents the
+    #   `model-name-major-minor` form as a "Fixed major and minor version", and
+    #   instructs: "For precise control, pin your deployment to a specific
+    #   major.minor version identifier." GA deprecation notice period is
+    #   6 months, so it cannot be withdrawn inside this window, and retirement
+    #   fails loudly — "Once retired, requests to its identifiers fail with a
+    #   404 error" — rather than by silent substitution.
+    # Additional property, not a selection criterion: open weights under a
+    #   Modified MIT license mean the exact artifact is independently
+    #   obtainable, so a third party can recompute against the same model.
+    source: https://docs.mistral.ai/inference/model-lifecycle
