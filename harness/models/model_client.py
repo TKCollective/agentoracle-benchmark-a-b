@@ -255,7 +255,7 @@ class LiveModelClient(BaseModelClient):
         else:
             # Proxy-injected: deliberately do NOT read or send a key.
             self.api_key = ""
-        self.sampling = live_providers.sampling_record(self.spec.family, self.spec.pin or "")
+        self.sampling = live_providers.sampling_record(self.spec.family, self.spec.pin or "", auth=self.auth_mode)
         self._http = httpx.Client(timeout=live_providers.TIMEOUT_S)
 
     # -- internals
@@ -323,11 +323,12 @@ class LiveModelClient(BaseModelClient):
             pass
 
 
-def get_model_client(name: str, dry_run: bool, config_path: pathlib.Path = CONFIG_PATH) -> BaseModelClient:
+def get_model_client(name: str, dry_run: bool, config_path: pathlib.Path = CONFIG_PATH,
+                     auth_mode: str = "proxy_injected") -> BaseModelClient:
     spec = resolve_model(name, config_path)
     if dry_run:
         return FixtureModelClient(spec)
-    return LiveModelClient(spec=spec)
+    return LiveModelClient(spec=spec, auth_mode=auth_mode)
 
 
 __all__ = [

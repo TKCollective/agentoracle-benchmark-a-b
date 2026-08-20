@@ -186,7 +186,13 @@ def load_or_create_key(receipt_dir: pathlib.Path) -> SigningKey:
     raw_pub = priv.public_key().public_bytes(
         encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw
     )
-    kid = b64u(hashlib.sha256(raw_pub).digest()[:16])
+    if dev:
+        kid = b64u(hashlib.sha256(raw_pub).digest()[:16])
+    else:
+        # Operator-supplied seed (AGENTORACLE_RECEIPT_SK): benchmark identity.
+        # The prefix makes these receipts distinguishable at a glance from both
+        # dev-key receipts and production receipts.
+        kid = "benchmark-a-" + hashlib.sha256(raw_pub).hexdigest()[:16]
     return SigningKey(private=priv, kid=kid, dev_key=dev)
 
 
@@ -215,7 +221,8 @@ class ReceiptWriter:
         self.path = self.dir / f"receipts-{self.run_id}-{suffix}.jsonl"
         self._lock = threading.Lock()
         self._count = 0
-        (self.dir / "public_key.jwk.json").write_text(
+        self.public_jwk_path = self.dir / "public_key.jwk.json"
+        self.public_jwk_path.write_text(
             json.dumps(self.key.public_jwk, indent=2, sort_keys=True) + "\n"
         )
 

@@ -39,6 +39,7 @@ import json
 import logging
 import os
 import pathlib
+import platform
 import re
 import signal
 import sys
@@ -57,7 +58,7 @@ from harness.models.model_client import (  # noqa: E402
     get_model_client,
     load_model_specs,
 )
-from harness.receipts.receipt_writer import ReceiptWriter  # noqa: E402
+from harness.receipts.receipt_writer import ReceiptWriter, load_or_create_key  # noqa: E402
 
 QUESTIONS_PATH = REPO_ROOT / "harness" / "questions" / "questions.json"
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "data"
@@ -236,8 +237,9 @@ def build_parser() -> argparse.ArgumentParser:
         prog="harness/run.py",
         description="Experiment A: citation survival under a fail-closed verification gate.",
     )
-    p.add_argument("--model", default=os.environ.get("HARNESS_MODEL", "gpt-5.6"),
-                   help="base model id from harness/models/model_config.yaml (default: gpt-5.6)")
+    p.add_argument("--model", default=os.environ.get("HARNESS_MODEL", ""),
+                   help="REQUIRED: base model id from harness/models/model_config.yaml "
+                        "(no default; a pre-registered run must name its model explicitly)")
     p.add_argument("--domain", default=os.environ.get("HARNESS_DOMAIN", "all"),
                    help="finance | medical | legal | technical | all (default: all)")
     p.add_argument("--limit", type=int, default=int(os.environ.get("HARNESS_LIMIT", "0")),
@@ -261,6 +263,10 @@ def build_parser() -> argparse.ArgumentParser:
                    help="pacing delay between questions in milliseconds")
     p.add_argument("--gate-url", default=os.environ.get("AGENTORACLE_EVALUATE_URL", ""),
                    help="override the /evaluate endpoint")
+    p.add_argument("--auth-mode", default=os.environ.get("HARNESS_AUTH_MODE", "proxy_injected"),
+                   choices=["proxy_injected", "env_key"],
+                   help="how live provider credentials are supplied (see docs/repro.md); "
+                        "the published run used env_key on the operator's machine")
     p.add_argument("--log-level", default=os.environ.get("HARNESS_LOG_LEVEL", "INFO"))
     p.add_argument("--print-state", action="store_true", help="print the resolved state file and exit 0")
     return p
@@ -325,8 +331,14 @@ def main(argv: Optional[List[str]] = None) -> int:
         return EXIT_OK
 
     # --- model + gate wiring (validated before taking the lock)
+    if not args.model:
+        log.error(
+            "no model chosen; pass --model <id>. Declared models: %s",
+            ", ".join(s.model for s in load_model_specs()),
+        )
+        return EXIT_CONFIG
     try:
-        model_client = get_model_client(args.model, dry_run=args.dry_run)
+        model_client = get_model_client(args.model, dry_run=args.dry_run, auth_mode=args.auth_mode)
     except ModelConfigError as exc:
         log.error("model configuration error: %s", exc)
         log.error("declared models: %s", ", ".join(s.model for s in load_model_specs()))
@@ -347,6 +359,7 @@ def main(argv: Optional[List[str]] = None) -> int:
                     p.replace(archived)
                     log.info("--fresh: archived %s -> %s", p, archived)
 
+        signing_key = load_or_create_key(paths["receipts"])
         meta = {
             "run_id": run_id,
             "model": getattr(model_client, "name", args.model),
@@ -358,6 +371,19 @@ def main(argv: Optional[List[str]] = None) -> int:
             "question_count_in_scope": len(questions),
             "harness_version": HARNESS_VERSION,
             "results_path": str(paths["results"]),
+            "runtime": {
+                "python_version": platform.python_version(),
+                "implementation": platform.python_implementation(),
+                "platform": platform.platform(),
+            },
+            "auth_mode": args.auth_mode,
+            "sampling": getattr(model_client, "sampling", None),
+            "receipt_signing": {
+                "kid": signing_key.kid,
+                "alg": "EdDSA",
+                "dev_key": signing_key.dev_key,
+                "public_jwk_path": str(paths["receipts"] / "public_key.jwk.json"),
+            },
         }
         state = RunState(paths["state"], meta)
         existed = state.load()
@@ -378,7 +404,7 @@ def main(argv: Optional[List[str]] = None) -> int:
             state.save()
             return EXIT_OK
 
-        receipts = ReceiptWriter(receipt_dir=paths["receipts"], run_id=run_id, dry_run=bool(args.dry_run))
+        receipts = ReceiptWriter(receipt_dir=paths["receipts"], run_id=run_id, dry_run=bool(args.dry_run), key=signing_key)
         gate = EvaluateClient(
             endpoint=args.gate_url or None,
             dry_run=bool(args.dry_run),

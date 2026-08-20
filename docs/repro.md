@@ -21,7 +21,7 @@ python3 -m pip install -r harness/requirements.txt
 ## 2. Smoke test (offline, no keys, no data collection)
 
 ```bash
-python3 harness/run.py --dry-run --limit 5
+python3 harness/run.py --model claude-sonnet-5 --dry-run --limit 5
 echo $?          # 0
 ```
 
@@ -50,14 +50,14 @@ independent deterministic stack described in
 
 ```bash
 # one model, one domain
-python3 harness/run.py --model gpt-5.6 --domain finance --resume
+python3 harness/run.py --model gpt-5.6-sol --domain finance --resume --auth-mode env_key
 
 # one model, all 200 questions
-python3 harness/run.py --model gpt-5.6 --domain all --resume
+python3 harness/run.py --model gpt-5.6-sol --domain all --resume --auth-mode env_key
 
-# all three provider families
-for m in gpt-5.6 kimi-k3 claude-sonnet-5; do
-  python3 harness/run.py --model "$m" --domain all --resume
+# all three provider families (run sequentially, one process at a time)
+for m in gpt-5.6-sol claude-sonnet-5 mistral-medium-3-5; do
+  python3 harness/run.py --model "$m" --domain all --resume --auth-mode env_key
 done
 ```
 
@@ -71,7 +71,8 @@ requires an exact version pin for the model in
 
 | Flag | Meaning |
 |---|---|
-| `--model` | model id from `harness/models/model_config.yaml` |
+| `--model` | **required** — model id from `harness/models/model_config.yaml`; there is no default |
+| `--auth-mode` | `proxy_injected` \| `env_key` — how provider credentials are supplied (see Authentication) |
 | `--domain` | `finance` \| `medical` \| `legal` \| `technical` \| `all` (comma-separated accepted) |
 | `--limit N` | process at most N *remaining* questions this invocation |
 | `--resume` | continue an existing run (the default; explicit for cron clarity) |
@@ -98,16 +99,16 @@ re-invoke the same command with `--resume`; it continues from the next
 unprocessed question and never re-runs or double-counts a completed one.
 
 ```bash
-python3 harness/run.py --dry-run --domain medical --delay-ms 700 --run-id demo &
+python3 harness/run.py --model claude-sonnet-5 --dry-run --domain medical --delay-ms 700 --run-id demo &
 sleep 3; kill -9 %1
-python3 harness/run.py --dry-run --domain medical --resume --run-id demo
+python3 harness/run.py --model claude-sonnet-5 --dry-run --domain medical --resume --run-id demo
 echo $?          # 0
 ```
 
 ## 6. Cron safety
 
 ```cron
-*/15 * * * * cd /srv/benchmark-a-b && .venv/bin/python harness/run.py --model gpt-5.6 --resume >> /var/log/exp-a.log 2>&1
+*/15 * * * * cd /srv/benchmark-a-b && .venv/bin/python harness/run.py --model gpt-5.6-sol --resume >> /var/log/exp-a.log 2>&1
 ```
 
 * An exclusive `flock` on `data/locks/<run-id>.lock` means a second concurrent
@@ -139,6 +140,14 @@ are not already canonical, so a re-serialized or edited receipt fails.
 Receipts written without `AGENTORACLE_RECEIPT_SK` in the environment are signed
 with a local development key and carry `"dev_key": true` in the payload, so they
 can never be mistaken for the published run's receipts.
+
+The published run signs with a **run-specific benchmark identity**, not the
+production AgentOracle receipt key: the operator supplies a fresh Ed25519 seed
+via `AGENTORACLE_RECEIPT_SK`, the resulting `kid` carries a `benchmark-a-`
+prefix, and the payload records `"dev_key": false`. The corresponding public
+JWK is exported next to the receipts as `public_key.jwk.json` and ships with
+the dataset — verification needs that file alone, and benchmark receipts remain
+distinguishable from both dev-key receipts and production receipts.
 
 ## 8. Cumulative counts page
 
@@ -173,17 +182,19 @@ See [`pre-registration.md`](pre-registration.md) for the metric definitions and
 
 ## Authentication (how the published run supplied provider credentials)
 
-This harness reads **no provider API keys from the environment** in its default
-configuration. Credentials were supplied by an HTTPS forward proxy that injects
-the correct credential per host at request time, so the client deliberately
-sends **no** `Authorization` or `x-api-key` header of its own.
+**The published collection was executed by the operator on a local machine
+using `auth_mode=env_key`** (amended 2026-08-20; see the dated deviation in
+`pre-registration.md`). Provider credentials were supplied through local
+environment variables and were never committed to the repository, written to
+logs, or recorded in run metadata — the metadata records the *mode*, never a
+credential value.
 
-`LiveModelClient` therefore has two auth modes:
+`LiveModelClient` has two auth modes:
 
 | mode | behaviour |
 |---|---|
-| `proxy_injected` (default, used for the published run) | No key read, no auth header sent. A missing environment variable is not an error. |
-| `env_key` | Reads `OPENAI_API_KEY` / `ANTHROPIC_API_KEY` / `MISTRAL_API_KEY` and sends it. A missing variable is a hard error. |
+| `env_key` (used for the published run) | Reads `OPENAI_API_KEY` / `ANTHROPIC_API_KEY` / `MISTRAL_API_KEY` and sends it. A missing variable is a hard error. |
+| `proxy_injected` (default; supported) | No key read, no auth header sent; a configured HTTPS forward proxy must inject the correct credential per host. A missing environment variable is not an error. |
 
 **To reproduce with your own keys**, use `env_key`:
 

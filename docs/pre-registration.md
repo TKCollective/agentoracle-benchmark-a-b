@@ -297,6 +297,44 @@ changes this digest and must publish as its own dated deviation. This is the
 same move the verification work makes everywhere else: replace a claim about a
 record with a record that can be checked without trusting us.
 
+## Execution-environment amendment
+
+**Dated 2026-08-20. Published before the first live call and before any data
+collection, under the deviation rule stated in this document.**
+
+Local pre-flight on the operator's runner surfaced five execution-environment
+defects, none touching the design. Corrected in one amendment:
+
+1. **`--model` is now required.** The CLI previously defaulted to `gpt-5.6`, a
+   retired provider alias the harness itself refuses. A pre-registered run must
+   name its model explicitly; a silent default has no place in one.
+2. **`--auth-mode` now exists.** The documented `env_key` reproduction path had
+   no CLI flag wiring it through; added, with the mode recorded in run
+   metadata. The sampling record now reports the mode actually in use rather
+   than a hard-coded value.
+3. **Published-run authentication is `env_key` on the operator's local
+   machine**, not `proxy_injected` as earlier drafts of `repro.md` stated.
+   Credential values never enter the repository, logs, or metadata.
+4. **`httpx==0.28.1` is pinned** (with its transitives), the version that
+   validated the live transport on 2026-08-19; it was required by the live
+   adapters but absent from `requirements.txt`.
+5. **Run metadata now records the runtime** (Python version, implementation,
+   platform), the auth mode, the sampling record, and the receipt-signing
+   identity (`kid`, algorithm, `dev_key` flag, public-JWK path). The published
+   run signs with a run-specific benchmark key whose `kid` is prefixed
+   `benchmark-a-`; the production AgentOracle signing key never leaves its
+   deployment, and benchmark receipts are distinguishable from production
+   receipts by construction.
+
+Nothing in this amendment touches the frozen questions, the model pins, the
+prompts, the thresholds, the metrics, or the scoring rules. The question-set
+digest is unchanged:
+`f7f70bd92dc284adaeb2580117e324cf379fa4beae9a9a2c5fc0bd40aefee7a5`.
+
+The standard applied is the one this document already used twice: a defect
+found before any data exists is published as a dated deviation, never absorbed
+silently. No live call had been made at the time of this entry.
+
 **Also corrected on 2026-08-17, on a separate surface.** The changelog entry at
 `agentoracle.co/changelog` for 2026-08-12 stated that the pre-registration
 document, harness, and questions were all public before any data was collected.

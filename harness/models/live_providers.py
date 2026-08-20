@@ -86,15 +86,19 @@ TIMEOUT_S = 120.0
 MAX_ATTEMPTS = 4
 
 
-def sampling_record(family: str, pin: str) -> Dict[str, Any]:
-    """What was actually requested of the provider, for the run metadata."""
+def sampling_record(family: str, pin: str, auth: str = "proxy_injected") -> Dict[str, Any]:
+    """What was actually requested of the provider, for the run metadata.
+
+    ``auth`` records the mode actually in use — never hard-code it, or the
+    metadata misstates how the run supplied credentials.
+    """
     rec: Dict[str, Any] = {
         "family": family,
         "pin_sent": pin,
         "temperature_requested": TEMPERATURE,
         "max_output_tokens": MAX_OUTPUT_TOKENS,
         "transport": "httpx",
-        "auth": "proxy_injected",
+        "auth": auth,
         "notes": [],
     }
     if family == "anthropic":
