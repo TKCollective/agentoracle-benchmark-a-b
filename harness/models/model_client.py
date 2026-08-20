@@ -27,6 +27,13 @@ import pathlib
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
+try:  # package-relative when imported as harness.models.model_client
+    from . import live_providers
+except ImportError:  # direct-path import in scripts and tests
+    import live_providers  # type: ignore
+
+import httpx
+
 try:
     import yaml
 except Exception:  # pragma: no cover
@@ -183,10 +190,30 @@ _PROHIBITED_ALIASES: Dict[str, str] = {
 
 @dataclass
 class LiveModelClient(BaseModelClient):
-    """Live provider path. Refuses to operate without a pin and a key."""
+    """Live provider path. Refuses to operate without a pin.
+
+    Authentication has two modes, both supported so that this run is
+    reproducible by someone without our infrastructure:
+
+    ``proxy_injected`` (default)
+        No API key is read and **no auth header is sent**. An HTTPS forward
+        proxy injects the correct credential per host at request time. A missing
+        environment variable is therefore not an error in this mode.
+
+    ``env_key``
+        Conventional behaviour: read ``OPENAI_API_KEY`` /``ANTHROPIC_API_KEY`` /
+        ``MISTRAL_API_KEY`` from the environment and send it ourselves. A
+        missing variable is a hard error. Use this when reproducing the run with
+        your own keys.
+
+    See ``harness/models/live_providers.py`` and ``docs/repro.md``. Note that
+    only ``httpx``-style transports honour the proxy; ``aiohttp`` would send
+    requests unauthenticated and must not be substituted.
+    """
 
     spec: ModelSpec
     api_key: str = ""
+    auth_mode: str = "proxy_injected"
     extra: Dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
@@ -208,24 +235,92 @@ class LiveModelClient(BaseModelClient):
                 "The pre-registration selection rule requires an exact pin "
                 "(docs/pre-registration.md). Refusing to run."
             )
+        if self.auth_mode not in ("proxy_injected", "env_key"):
+            raise ModelConfigError(
+                f"unknown auth_mode {self.auth_mode!r}; expected 'proxy_injected' or 'env_key'"
+            )
         env_var = {
             "openai": "OPENAI_API_KEY",
             "anthropic": "ANTHROPIC_API_KEY",
             "moonshot": "MOONSHOT_API_KEY",
             "mistral": "MISTRAL_API_KEY",
         }.get(self.spec.family, "MODEL_API_KEY")
-        self.api_key = self.api_key or os.environ.get(env_var, "")
-        if not self.api_key:
-            raise ModelConfigError(f"{env_var} is not set; cannot run live model {self.spec.model}")
+        if self.auth_mode == "env_key":
+            self.api_key = self.api_key or os.environ.get(env_var, "")
+            if not self.api_key:
+                raise ModelConfigError(
+                    f"{env_var} is not set; cannot run live model {self.spec.model} "
+                    "under auth_mode='env_key'"
+                )
+        else:
+            # Proxy-injected: deliberately do NOT read or send a key.
+            self.api_key = ""
+        self.sampling = live_providers.sampling_record(self.spec.family, self.spec.pin or "")
+        self._http = httpx.Client(timeout=live_providers.TIMEOUT_S)
 
-    def plan(self, question: Dict[str, Any]) -> List[str]:  # pragma: no cover - live path
-        raise NotImplementedError(
-            "Live provider calls are enabled at the start of the pre-registered "
-            "collection window (2026-08-19). Wire the provider SDK here."
+    # -- internals
+    def _ask(self, prompt: str) -> Dict[str, Any]:
+        return live_providers.call_provider(
+            self.spec.family,
+            self.spec.pin or self.spec.model,
+            prompt,
+            api_key=self.api_key or None,
+            client=self._http,
         )
 
-    propose_citations = plan  # type: ignore[assignment]
-    finalize = plan  # type: ignore[assignment]
+    # -- BaseModelClient contract
+    def plan(self, question: Dict[str, Any]) -> List[str]:
+        data = self._ask(live_providers._plan_prompt(question))
+        steps = data.get("steps")
+        if not isinstance(steps, list) or not steps:
+            raise live_providers.ProviderParseError(
+                f"{self.name}: reply had no usable 'steps' list: {str(data)[:200]}"
+            )
+        return [str(s) for s in steps if str(s).strip()][:4]
+
+    def propose_citations(
+        self, question: Dict[str, Any], step: str, attempt: int, n: int = 2
+    ) -> List[Candidate]:
+        data = self._ask(live_providers._propose_prompt(question, step, attempt, n))
+        raw = data.get("citations")
+        if not isinstance(raw, list):
+            # A missing list is a protocol failure, not "the model found nothing".
+            # Collapsing the two would corrupt the measurement.
+            raise live_providers.ProviderParseError(
+                f"{self.name}: reply had no 'citations' list: {str(data)[:200]}"
+            )
+        out: List[Candidate] = []
+        for item in raw[:n]:
+            if not isinstance(item, dict):
+                continue
+            url = str(item.get("url", "")).strip()
+            if not url:
+                continue
+            out.append(
+                Candidate(
+                    url=url,
+                    title=str(item.get("title", "")).strip(),
+                    doi=str(item.get("doi", "")).strip(),
+                    locator=str(item.get("locator", "")).strip(),
+                    claim=str(item.get("claim", "")).strip(),
+                )
+            )
+        return out
+
+    def finalize(self, question: Dict[str, Any], citations: List[Dict[str, Any]]) -> str:
+        data = self._ask(live_providers._finalize_prompt(question, citations))
+        answer = data.get("answer")
+        if not isinstance(answer, str) or not answer.strip():
+            raise live_providers.ProviderParseError(
+                f"{self.name}: reply had no 'answer' string: {str(data)[:200]}"
+            )
+        return answer.strip()
+
+    def close(self) -> None:
+        try:
+            self._http.close()
+        except Exception:  # pragma: no cover - best effort
+            pass
 
 
 def get_model_client(name: str, dry_run: bool, config_path: pathlib.Path = CONFIG_PATH) -> BaseModelClient:

@@ -170,3 +170,41 @@ published tables is derived from data that is not in the raw output.
 
 See [`pre-registration.md`](pre-registration.md) for the metric definitions and
 [`ground-truth-spec.md`](ground-truth-spec.md) for the label criteria.
+
+## Authentication (how the published run supplied provider credentials)
+
+This harness reads **no provider API keys from the environment** in its default
+configuration. Credentials were supplied by an HTTPS forward proxy that injects
+the correct credential per host at request time, so the client deliberately
+sends **no** `Authorization` or `x-api-key` header of its own.
+
+`LiveModelClient` therefore has two auth modes:
+
+| mode | behaviour |
+|---|---|
+| `proxy_injected` (default, used for the published run) | No key read, no auth header sent. A missing environment variable is not an error. |
+| `env_key` | Reads `OPENAI_API_KEY` / `ANTHROPIC_API_KEY` / `MISTRAL_API_KEY` and sends it. A missing variable is a hard error. |
+
+**To reproduce with your own keys**, use `env_key`:
+
+```bash
+export OPENAI_API_KEY=... ANTHROPIC_API_KEY=... MISTRAL_API_KEY=...
+python3 harness/run.py --model mistral-medium-3-5 --auth-mode env_key
+```
+
+Only `httpx`/`requests`-style transports honour `HTTPS_PROXY`. **`aiohttp` must
+not be substituted** — it ignores the proxy by default and would send requests
+unauthenticated.
+
+### Sampling actually requested
+
+Recorded per run in metadata via `live_providers.sampling_record()`:
+`temperature=0.0`, `max_tokens=2048`, transport `httpx`, plus the exact pin sent
+to each provider. Anthropic requires `max_tokens`, which is noted in the record
+rather than left implicit. Retries use jittered exponential backoff on
+408/409/425/429 and 5xx, capped at 4 attempts; other 4xx fail immediately.
+
+**A transport or parse failure raises rather than returning an empty result.**
+An unparseable reply must never be recorded as "the model proposed no
+citations" — collapsing those two states would corrupt the measurement this
+experiment exists to make.
