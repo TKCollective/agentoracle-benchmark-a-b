@@ -389,6 +389,27 @@ prompts, the thresholds, the metrics, or the scoring rules. The question-set
 digest is unchanged:
 `f7f70bd92dc284adaeb2580117e324cf379fa4beae9a9a2c5fc0bd40aefee7a5`.
 
+## Operational amendment - gate request/response contract, gate-error semantics
+
+**Dated 2026-08-20 (third amendment of this date, "2026-08-20c"). Published
+before the first collected data point.** The third smoke test reached the live
+gate and every call returned HTTP 400: the harness's request shape predated
+the deployed /evaluate contract. Probed live: the gate accepts
+`{"content": <claim text>, "min_confidence": <float>}` and returns claim-level
+verdicts (`supported` / `refuted` / `unverifiable`) with corrections and a
+signed composed receipt. Two corrections: (1) the client now sends the
+production contract and maps claim-level verdicts onto the three-way
+vocabulary - any refuted claim -> invalid, all supported -> valid, anything
+else -> indeterminate; unknown vocabulary can only weaken toward
+indeterminate, never toward a pass. (2) A gate that could NOT evaluate (HTTP
+error, transport failure, retries exhausted) now raises instead of returning
+an error verdict: the question becomes an execution failure - pending, retried
+- and is never recorded as a citation failure. The 131 receipts of the third
+smoke test, all carrying gate outcome "error", are discarded with that run.
+Frozen questions, pins, prompts, thresholds, metrics, scoring: untouched.
+Digest unchanged:
+`f7f70bd92dc284adaeb2580117e324cf379fa4beae9a9a2c5fc0bd40aefee7a5`.
+
 **Also corrected on 2026-08-17, on a separate surface.** The changelog entry at
 `agentoracle.co/changelog` for 2026-08-12 stated that the pre-registration
 document, harness, and questions were all public before any data was collected.

@@ -54,6 +54,10 @@ KNOWN_VERDICTS = frozenset({VERDICT_VALID, VERDICT_INVALID, VERDICT_INDETERMINAT
 # Corrected 2026-08-20 (dated deviation): api.agentoracle.co has no DNS record.
 DEFAULT_ENDPOINT = "https://agentoracle.co/evaluate"
 
+#: Sent with every request; the gate's claim-level verdicts (not this
+#: threshold) drive the three-way mapping below. Deviation 2026-08-20c.
+GATE_MIN_CONFIDENCE = 0.8
+
 
 class GateError(RuntimeError):
     """Raised for transport/protocol failures talking to the gate."""
@@ -155,17 +159,26 @@ class EvaluateClient:
         ``error`` outcome, which does not pass. Callers are therefore unable to
         accidentally treat an exception-swallowed failure as success.
         """
+        # Production /evaluate contract (probed live 2026-08-20, deviation
+        # 2026-08-20c): {"content": <claim text>, "min_confidence": <float>}.
+        # question_id / citation_id / citation stay local - they identify the
+        # decision in OUR receipts; the gate verifies the claim itself.
         payload = {
-            "question_id": question_id,
-            "citation_id": citation_id,
-            "domain": domain,
-            "model": model,
-            "claim": claim,
-            "citation": citation,
+            "content": claim,
+            "min_confidence": GATE_MIN_CONFIDENCE,
         }
 
         if self.dry_run:
-            return self._fixture_decision(payload)
+            # Fixture decisions keep the original six-field blob so dry-run
+            # behaviour is byte-identical to the pre-adapter harness.
+            return self._fixture_decision({
+                "question_id": question_id,
+                "citation_id": citation_id,
+                "domain": domain,
+                "model": model,
+                "claim": claim,
+                "citation": citation,
+            })
 
         started = time.time()
         last_err = ""
@@ -184,47 +197,36 @@ class EvaluateClient:
                     self._sleep(attempt)
                     continue
                 if status >= 400:
-                    # Non-retryable protocol error. Not a pass.
-                    return GateDecision(
-                        citation_id=citation_id,
-                        question_id=question_id,
-                        outcome="error",
-                        reason=f"http {status}",
-                        attempts=attempt,
-                        latency_ms=int((time.time() - started) * 1000),
-                        http_status=status,
-                        endpoint=self.endpoint,
-                    )
+                    # Non-retryable protocol error: the gate did not evaluate.
+                    # Raised, not returned as a verdict - a gate that could not
+                    # answer is an execution failure, never a "fail" decision
+                    # (deviation 2026-08-20c, same family as defect #9).
+                    raise GateError(f"gate http {status}: {resp.text[:300]}")
                 body = resp.json()
                 verdict = self._normalise_verdict(body)
                 return GateDecision(
                     citation_id=citation_id,
                     question_id=question_id,
                     outcome=verdict,
-                    reason=str(body.get("reason", ""))[:2000],
+                    reason=str(((body.get("evaluation") or {}).get("recommendation_text"))
+                               or body.get("reason", ""))[:2000],
                     attempts=attempt,
                     latency_ms=int((time.time() - started) * 1000),
                     http_status=status,
                     raw=body if isinstance(body, dict) else {"body": body},
                     endpoint=self.endpoint,
                 )
+            except GateError:
+                raise
             except Exception as exc:  # network error, timeout, bad JSON
                 last_err = f"{type(exc).__name__}: {exc}"
                 log.warning("gate call failed (attempt %s/%s): %s", attempt, self.max_attempts, last_err)
                 if attempt < self.max_attempts:
                     self._sleep(attempt)
 
-        # Exhausted retries: explicit error outcome, which does not pass.
-        return GateDecision(
-            citation_id=citation_id,
-            question_id=question_id,
-            outcome="error",
-            reason=last_err or "gate unreachable",
-            attempts=self.max_attempts,
-            latency_ms=int((time.time() - started) * 1000),
-            http_status=status,
-            endpoint=self.endpoint,
-        )
+        # Exhausted retries: the gate never evaluated. Execution failure,
+        # not a verdict (deviation 2026-08-20c).
+        raise GateError(last_err or "gate unreachable after retries")
 
     # ----------------------------------------------------------------- helpers
     def _headers(self) -> Dict[str, str]:
@@ -239,34 +241,41 @@ class EvaluateClient:
         time.sleep(delay)
 
     @staticmethod
+    @staticmethod
     def _normalise_verdict(body: Any) -> str:
-        """Map a response body onto exactly one of the three known verdicts.
+        """Map the production /evaluate response onto the three known verdicts.
 
-        Anything unrecognised is ``indeterminate`` — never a pass. An unknown
-        shape means the gate did not tell us the citation is valid, and the
-        only safe reading of "did not tell us it is valid" is "not a pass".
+        Contract probed live 2026-08-20 (deviation 2026-08-20c): the response
+        carries ``evaluation.claims[]`` with claim-level verdicts
+        ``supported`` / ``refuted`` / ``unverifiable``. Mapping: any refuted
+        claim -> invalid; all claims supported -> valid; anything else
+        (unverifiable present, empty, unknown) -> indeterminate. Falls back to
+        ``evaluation.recommendation`` (act -> valid, reject/halt -> invalid),
+        then to legacy flat keys, then indeterminate. Unknown vocabulary can
+        only weaken toward indeterminate - never toward a pass.
         """
         if not isinstance(body, dict):
             return VERDICT_INDETERMINATE
-        raw = body.get("verdict", body.get("result", body.get("status", "")))
-        v = str(raw).strip().lower()
-        if v in KNOWN_VERDICTS:
-            return v
-        aliases = {
-            "pass": VERDICT_VALID,
-            "passed": VERDICT_VALID,
-            "true": VERDICT_VALID,
-            "verified": VERDICT_VALID,
-            "fail": VERDICT_INVALID,
-            "failed": VERDICT_INVALID,
-            "false": VERDICT_INVALID,
-            "rejected": VERDICT_INVALID,
-            "unknown": VERDICT_INDETERMINATE,
-            "unverifiable": VERDICT_INDETERMINATE,
-            "inconclusive": VERDICT_INDETERMINATE,
-            "": VERDICT_INDETERMINATE,
-        }
-        return aliases.get(v, VERDICT_INDETERMINATE)
+        ev = body.get("evaluation") or {}
+        claims = ev.get("claims") or []
+        if isinstance(claims, list) and claims:
+            vs = [str(c.get("verdict", "")).strip().lower() for c in claims if isinstance(c, dict)]
+            if any(v == "refuted" for v in vs):
+                return VERDICT_INVALID
+            if vs and all(v == "supported" for v in vs):
+                return VERDICT_VALID
+            return VERDICT_INDETERMINATE
+        rec = str(ev.get("recommendation", body.get("verdict", ""))).strip().lower()
+        if rec == "act":
+            return VERDICT_VALID
+        if rec in ("reject", "halt"):
+            return VERDICT_INVALID
+        raw = str(body.get("verdict", body.get("result", body.get("status", "")))).strip().lower()
+        if raw in ("valid", "supported", "pass", "passed", "true"):
+            return VERDICT_VALID
+        if raw in ("invalid", "refuted", "fail", "failed", "false"):
+            return VERDICT_INVALID
+        return VERDICT_INDETERMINATE
 
     def _fixture_decision(self, payload: Dict[str, Any]) -> GateDecision:
         """Deterministic offline verdict for ``--dry-run``.

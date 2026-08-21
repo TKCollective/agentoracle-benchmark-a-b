@@ -22,7 +22,7 @@ from __future__ import annotations
 from typing import Any, Dict, Optional
 
 from harness.agents.agent_ungated import AgentResult, UngatedAgent, VetResult
-from harness.gate.evaluate_client import EvaluateClient, GateDecision
+from harness.gate.evaluate_client import EvaluateClient, GateDecision, GateError
 from harness.models.model_client import BaseModelClient, Candidate
 from harness.receipts.receipt_writer import (
     DECISION_FAIL,
