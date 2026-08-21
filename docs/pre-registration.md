@@ -417,6 +417,62 @@ The harness was a disclosed stub and the question set was empty, both scheduled
 below for 2026-08-17. That entry now carries a dated correction quoting its
 original wording.
 
+## Attribution correction - the 57.6% figure
+
+**Dated 2026-08-21. Published before the first live run and before any data
+collection, under the deviation rule stated in this document. The original
+paragraph under "Precedent and the honesty norm" is left standing above,
+unedited.**
+
+**The paragraph attributes this project's own benchmark scores to a third
+party's paper.** All five figures - 57.6% overall, and 70.6% / 61.6% / 27.3% /
+13.6% by label - are results produced by AgentOracle `/evaluate` on the AVeriTeC
+2024 dev set, published in
+[`TKCollective/agentoracle-eval-harness/RESULTS.md`](https://github.com/TKCollective/agentoracle-eval-harness/blob/main/RESULTS.md)
+on 2026-05-28. They are not figures reported by Schlichtkrull et al.
+
+The paper's own provided baselines on that dev set are substantially lower:
+roughly 25% for a BERT-base classifier, roughly 30-35% for T5, with the best
+paper-provided baseline near 30%.
+
+Corrected statement of the same point:
+
+> AVeriTeC is the precedent this experiment works against. The dataset paper's
+> provided baselines reach roughly 25-35% on real-world claim verification
+> (Schlichtkrull et al., NeurIPS 2023 Datasets and Benchmarks). AgentOracle
+> `/evaluate` scores **57.6%** on the 498-claim dev set, and **57.7%** on a
+> held-out half of 248 claims that was untouched during verdict-mapping
+> selection, with sub-categories published rather than hidden: 70.6% Supported,
+> 61.6% Refuted, 27.3% Not Enough Evidence, 13.6% Conflicting Evidence. The
+> discipline inherited from AVeriTeC is the norm, not the number: state the
+> ceiling, disclose the weak categories, do not round up.
+
+**Why this correction is published rather than edited in place.** The
+misattribution is falsifiable by opening the cited paper, and it sits in the
+document whose function is to commit to a measurement before the measurement
+exists. A reader who checks the citation and finds 25-35% has no way to
+distinguish a citation error from decorative numbers. Correcting it silently
+would leave that reader with the same problem and no record. The correction is
+also strictly better news for this project than the text it replaces, which is
+precisely why it should not be quietly absorbed.
+
+**Second defect in the same paragraph: venue.** The original cites
+Schlichtkrull et al. as NeurIPS 2023; `RESULTS.md` cites the same authors as
+EMNLP 2024. The AVeriTeC dataset paper is NeurIPS 2023 Datasets and Benchmarks;
+the shared task ran at the FEVER workshop co-located with EMNLP 2024. These are
+different artifacts and at most one citation was correct for whichever was
+meant. This document now cites the dataset paper, NeurIPS 2023, for the
+baselines.
+
+**Contamination control, disclosed as an open gap.** `RESULTS.md` committed on
+2026-05-14 to an AVeriTeC parametric-only (no-retrieval) baseline as a
+contamination control, to separate grounded retrieval from training-data recall
+in the 57.6% figure. **That control has not been run.** The implementation
+exists (`src/averitec/runner_parametric.py`, `src/clients/parametric_client.py`,
+`src/scoring/contamination.py`); the run does not. Until it does, no claim is
+made about how much of 57.6% is retrieval rather than memorization. The run is
+scheduled after this experiment's collection window closes, and the delta will
+be published with the Sep 2 results whatever it shows.
 ## Schedule
 
 | Date | Milestone |
