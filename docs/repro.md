@@ -73,6 +73,17 @@ requires an exact version pin for the model in
 |---|---|
 | `--model` | **required** — model id from `harness/models/model_config.yaml`; there is no default |
 | `--auth-mode` | `proxy_injected` \| `env_key` — how provider credentials are supplied (see Authentication) |
+
+Exit codes: `0` success - `2` configuration error - `3` every question hit an
+execution failure (nothing marked complete) - `4` partial; failed questions
+remain pending and are retried on rerun. An execution failure never marks a
+question complete and never fabricates a receipt or gate decision.
+
+The gate is model-backed (retrieval calls per invocation): the gated arm is
+statistically reproducible, not bit-reproducible. A reproducer running after
+the backend changes gets a differently-backed gate rather than an error - the
+failure mode is silent divergence, not a dead URL.
+
 | `--domain` | `finance` \| `medical` \| `legal` \| `technical` \| `all` (comma-separated accepted) |
 | `--limit N` | process at most N *remaining* questions this invocation |
 | `--resume` | continue an existing run (the default; explicit for cron clarity) |

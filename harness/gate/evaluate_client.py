@@ -51,7 +51,8 @@ VERDICT_INDETERMINATE = "indeterminate"
 PASSING_VERDICTS = frozenset({VERDICT_VALID})
 KNOWN_VERDICTS = frozenset({VERDICT_VALID, VERDICT_INVALID, VERDICT_INDETERMINATE})
 
-DEFAULT_ENDPOINT = "https://api.agentoracle.co/evaluate"
+# Corrected 2026-08-20 (dated deviation): api.agentoracle.co has no DNS record.
+DEFAULT_ENDPOINT = "https://agentoracle.co/evaluate"
 
 
 class GateError(RuntimeError):

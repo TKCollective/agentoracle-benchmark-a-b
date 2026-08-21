@@ -68,6 +68,8 @@ LOCK_DIRNAME = "locks"
 HARNESS_VERSION = "1.0.0"
 EXIT_OK = 0
 EXIT_CONFIG = 2
+EXIT_ALL_FAILED = 3   # nothing completed: every question hit execution failure
+EXIT_PARTIAL = 4      # some completed, some failed; rerun retries the failures
 EXIT_LOCKED = 0  # cron-safe: another invocation holds the lock; nothing to do
 
 log = logging.getLogger("harness.run")
@@ -410,6 +412,8 @@ def main(argv: Optional[List[str]] = None) -> int:
             dry_run=bool(args.dry_run),
         )
 
+        meta["gate_endpoint"] = getattr(gate, "endpoint", args.gate_url or "")
+
         agents: List[Any] = []
         if "U" in arms:
             agents.append(
@@ -441,6 +445,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         receipt_baseline = int(state.data["counts"].get("receipts_written", 0))
 
         processed = 0
+        completed_ok = 0
+        failed = 0
         for q in pending:
             if _STOP["requested"]:
                 log.warning("stop requested; %s question(s) left for the next invocation", len(pending) - processed)
@@ -451,6 +457,46 @@ def main(argv: Optional[List[str]] = None) -> int:
                 per_arm.append(res.to_dict())
                 if res.error:
                     log.error("question %s arm %s errored: %s", q["id"], agent.agent_id, res.error)
+
+            # --- execution-failure semantics (defect #9 fix, 2026-08-20) ---
+            # An arm error means the provider call chain failed: the model did
+            # NOT complete the task, so nothing substantive exists to record.
+            # Different from "completed and proposed zero citations" and from
+            # "proposed citations, all failed the gate" - both of which produce
+            # clean arms with NO error. A failed question is never marked
+            # complete, emits no receipt, and stays pending for retry.
+            arm_errors = [a for a in per_arm if a.get("error")]
+            if arm_errors:
+                failed += 1
+                processed += 1
+                fails = state.data.setdefault("execution_failures", {})
+                entry = fails.setdefault(q["id"], {"attempts": 0, "history": []})
+                entry["attempts"] += 1
+                entry["history"].append({
+                    "at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                    "invocation_model": meta["model"],
+                    "arms": [{"agent": a.get("agent", ""),
+                              "category": str(a.get("error", "")).split(":", 1)[0],
+                              "error": str(a.get("error", ""))[:500]} for a in arm_errors],
+                })
+                append_jsonl(paths["results"], {
+                    "schema": "experiment-a/execution-error/1",
+                    "status": "provider_error",
+                    "run_id": run_id,
+                    "harness_version": HARNESS_VERSION,
+                    "question_set_digest": digest,
+                    "recorded_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                    "question_id": q["id"], "domain": q["domain"],
+                    "model": meta["model"], "attempt": entry["attempts"],
+                    "arms": per_arm,
+                    "note": "Execution failure: not a substantive outcome; question remains pending and is retried on rerun.",
+                })
+                state.save()
+                log.error("%s NOT completed: execution failure in %s arm(s) (attempt %s); stays pending",
+                          q["id"], len(arm_errors), entry["attempts"])
+                if args.delay_ms:
+                    time.sleep(args.delay_ms / 1000.0)
+                continue
 
             record = {
                 "schema": "experiment-a/raw/1",
@@ -479,6 +525,7 @@ def main(argv: Optional[List[str]] = None) -> int:
             state.record(q["id"], per_arm, receipt_baseline + receipts.count)
             state.save()
             processed += 1
+            completed_ok += 1
             log.info(
                 "%s done (%s/%s in this invocation; %s complete overall)",
                 q["id"], processed, len(pending), len(state.completed),
@@ -488,11 +535,19 @@ def main(argv: Optional[List[str]] = None) -> int:
 
         c = state.data["counts"]
         log.info(
-            "invocation complete: processed=%s | cumulative questions_run=%s citations_emitted=%s "
+            "invocation complete: processed=%s completed=%s failed=%s | cumulative questions_run=%s citations_emitted=%s "
             "citations_blocked=%s gate_saw=%s replans=%s receipts=%s",
-            processed, c["questions_run"], c["citations_emitted"], c["citations_blocked"],
+            processed, completed_ok, failed, c["questions_run"], c["citations_emitted"], c["citations_blocked"],
             c["citations_gate_saw"], c["replans"], c["receipts_written"],
         )
+        if failed and not completed_ok:
+            log.error("every question hit an execution failure; nothing marked complete "
+                      "and nothing substantive recorded. Exit %s.", EXIT_ALL_FAILED)
+            return EXIT_ALL_FAILED
+        if failed:
+            log.error("%s question(s) hit execution failures and remain pending; "
+                      "rerun to retry. Exit %s.", failed, EXIT_PARTIAL)
+            return EXIT_PARTIAL
         return EXIT_OK
     finally:
         lock.release()

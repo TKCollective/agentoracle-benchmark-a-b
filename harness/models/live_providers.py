@@ -82,6 +82,21 @@ ENDPOINTS: Dict[str, Dict[str, Any]] = {
 #: Requested sampling. Recorded into run metadata verbatim.
 TEMPERATURE = 0.0
 MAX_OUTPUT_TOKENS = 2048
+
+#: Per-family sampling compatibility (deviation
+#: 2026-08-20-sampling-parameter-compatibility). The pre-registered target is
+#: minimum-variance sampling, not semantic equality of a parameter name across
+#: incompatible provider APIs. Where a family rejects ``temperature``, the
+#: strongest supported minimum-variance configuration is used and the
+#: difference is recorded in run metadata - reported, never hidden.
+SAMPLING_COMPAT: Dict[str, Dict[str, Any]] = {
+    "openai": {"send_temperature": True},
+    "mistral": {"send_temperature": True},
+    "anthropic": {"send_temperature": False, "rejection":
+        "HTTP 400 invalid_request_error: '`temperature` is deprecated for this "
+        "model.' (observed live 2026-08-20, pin claude-sonnet-5; parameter "
+        "omitted, provider default sampling in effect)"},
+}
 TIMEOUT_S = 120.0
 MAX_ATTEMPTS = 4
 
@@ -92,7 +107,16 @@ def sampling_record(family: str, pin: str, auth: str = "proxy_injected") -> Dict
     ``auth`` records the mode actually in use — never hard-code it, or the
     metadata misstates how the run supplied credentials.
     """
+    _c = SAMPLING_COMPAT.get(family, {"send_temperature": True})
+    _st = bool(_c.get("send_temperature", True))
     rec: Dict[str, Any] = {
+        "target": "minimum-variance",
+        "temperature_sent": _st,
+        "temperature_accepted": None if _st else False,
+        "temperature_rejection": _c.get("rejection", ""),
+        "effective_sampling_control": (f"temperature={TEMPERATURE}" if _st else
+            "provider-default (temperature rejected by this model)"),
+        "deviation_id": "" if _st else "2026-08-20-sampling-parameter-compatibility",
         "family": family,
         "pin_sent": pin,
         "temperature_requested": TEMPERATURE,
@@ -218,24 +242,29 @@ def _extract_json(text: str) -> Dict[str, Any]:
 
 
 def _payload(family: str, pin: str, prompt: str) -> Dict[str, Any]:
+    _st = bool(SAMPLING_COMPAT.get(family, {"send_temperature": True}).get("send_temperature", True))
     if family == "anthropic":
-        return {
+        p = {
             "model": pin,
             "max_tokens": MAX_OUTPUT_TOKENS,
-            "temperature": TEMPERATURE,
             "system": _SYSTEM,
             "messages": [{"role": "user", "content": prompt}],
         }
+        if _st:
+            p["temperature"] = TEMPERATURE
+        return p
     # openai and mistral are both OpenAI-chat shaped
-    return {
+    p = {
         "model": pin,
-        "temperature": TEMPERATURE,
         "max_tokens": MAX_OUTPUT_TOKENS,
         "messages": [
             {"role": "system", "content": _SYSTEM},
             {"role": "user", "content": prompt},
         ],
     }
+    if _st:
+        p["temperature"] = TEMPERATURE
+    return p
 
 
 def _reply_text(family: str, body: Dict[str, Any]) -> str:

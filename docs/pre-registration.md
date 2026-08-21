@@ -335,6 +335,60 @@ The standard applied is the one this document already used twice: a defect
 found before any data exists is published as a dated deviation, never absorbed
 silently. No live call had been made at the time of this entry.
 
+## Operational amendment - endpoint, execution-failure semantics, sampling compatibility
+
+**Dated 2026-08-20 (second amendment of this date). Published before the first
+collected data point, under the deviation rule stated in this document.** Three
+defects surfaced during a five-question live smoke test (run id `smoke-test`,
+discarded); none had touched collected data because none existed.
+
+1. **Gate endpoint (defect #8).** The client default pointed at
+   `https://api.agentoracle.co/evaluate`, a hostname with no DNS record. The
+   gate is served from `https://agentoracle.co/evaluate`. The default is
+   corrected and the effective endpoint is now recorded in run metadata as
+   `gate_endpoint`.
+
+2. **Execution-failure semantics (defect #9).** The harness marked a question
+   complete, and the invocation exited 0, even when every provider call for the
+   question failed - observed twice, ten consecutive failures each, zero
+   citations, zero receipts, zero gate calls. That silently converts total
+   failure into apparent success: the exact defect class this benchmark exists
+   to measure. Corrected: an arm error (transport, HTTP, parse, timeout,
+   protocol) is an execution failure - never marked complete, no receipt or
+   gate decision fabricated, the attempt recorded in resumable state
+   (`execution_failures`) and in the results file under
+   `schema: experiment-a/execution-error/1`, and the question stays pending so
+   a rerun retries it. Exit codes distinguish the outcomes: `3` when nothing
+   completed, `4` when some completed and some failed. Three facts the record
+   now keeps separate: *the provider call failed*, *the model completed and
+   proposed zero citations*, and *the model proposed citations and all failed
+   the gate*.
+
+3. **Sampling-parameter compatibility (defect #10,
+   `2026-08-20-sampling-parameter-compatibility`).** The Anthropic API rejects
+   the `temperature` parameter for `claude-sonnet-5` outright (HTTP 400
+   `invalid_request_error`, observed live 2026-08-20). The pre-registered
+   intent is minimum-variance sampling, not semantic equality of a parameter
+   name across incompatible provider APIs. Ruling: each family receives the
+   strongest supported minimum-variance configuration; `temperature=0.0` is
+   sent where accepted (openai, mistral), omitted where rejected (anthropic,
+   provider-default sampling in effect); run metadata records per family what
+   was requested, sent, accepted or rejected (verbatim rejection preserved),
+   and the effective control. The cross-family difference is reported, never
+   hidden.
+
+**Gate backend during the collection window.** The gate is model-backed - it
+makes retrieval calls per invocation - so the gated arm is statistically
+reproducible, not bit-reproducible. A reproducer running after the backend
+changes gets a differently-backed gate rather than an error: the failure mode
+is silent divergence, not a dead URL. The backend as it stood during collection
+is recorded here.
+
+Nothing in this amendment touches the frozen questions, the model pins, the
+prompts, the thresholds, the metrics, or the scoring rules. The question-set
+digest is unchanged:
+`f7f70bd92dc284adaeb2580117e324cf379fa4beae9a9a2c5fc0bd40aefee7a5`.
+
 **Also corrected on 2026-08-17, on a separate surface.** The changelog entry at
 `agentoracle.co/changelog` for 2026-08-12 stated that the pre-registration
 document, harness, and questions were all public before any data was collected.
