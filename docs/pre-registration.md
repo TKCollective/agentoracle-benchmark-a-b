@@ -417,6 +417,35 @@ The harness was a disclosed stub and the question set was empty, both scheduled
 below for 2026-08-17. That entry now carries a dated correction quoting its
 original wording.
 
+## Operational amendment - two provider dialect corrections (2026-08-21b)
+
+**Dated 2026-08-21, during the collection window, after the claude-sonnet-5
+family completed and before the gpt-5.6-sol family produced any completed
+question.** Both defects were caught by the execution-failure machinery: every
+affected question was parked pending with a recorded error, and no partial or
+fabricated data was written.
+
+1. **gpt-5.6-sol rejects `max_tokens`** (HTTP 400: "Unsupported parameter:
+   'max_tokens' is not supported with this model. Use 'max_completion_tokens'
+   instead.", observed live 2026-08-20). All 200 questions in that family
+   parked with zero completions. The openai request now sends
+   `max_completion_tokens`; the value (2048) and every other parameter are
+   unchanged.
+
+2. **mistral-medium-3-5 sometimes returns the finalize answer as a structured
+   object** instead of the contracted string (observed live 2026-08-21, medical
+   domain). A deterministic model re-emits the same structure on retry, so the
+   strict parser would park those questions permanently. The client now accepts
+   a structured answer by preserving it verbatim as its canonical JSON
+   serialization - content unchanged, nothing summarized, nothing discarded.
+   Mistral questions completed before this amendment are unaffected; parked
+   ones are retried under the corrected parser.
+
+The claude-sonnet-5 family completed entirely before this amendment; its data
+is untouched. Frozen questions, pins, prompts, thresholds, metrics, scoring:
+untouched. Digest unchanged:
+`f7f70bd92dc284adaeb2580117e324cf379fa4beae9a9a2c5fc0bd40aefee7a5`.
+
 ## Attribution correction - the 57.6% figure
 
 **Dated 2026-08-21. Published before the first live run and before any data

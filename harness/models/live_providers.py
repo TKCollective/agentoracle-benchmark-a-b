@@ -253,10 +253,14 @@ def _payload(family: str, pin: str, prompt: str) -> Dict[str, Any]:
         if _st:
             p["temperature"] = TEMPERATURE
         return p
-    # openai and mistral are both OpenAI-chat shaped
+    # openai and mistral are both OpenAI-chat shaped, except the token-cap
+    # parameter name: current OpenAI models reject "max_tokens" outright and
+    # require "max_completion_tokens" (observed live 2026-08-20, pin
+    # gpt-5.6-sol; dated deviation 2026-08-21b).
+    token_key = "max_completion_tokens" if family == "openai" else "max_tokens"
     p = {
         "model": pin,
-        "max_tokens": MAX_OUTPUT_TOKENS,
+        token_key: MAX_OUTPUT_TOKENS,
         "messages": [
             {"role": "system", "content": _SYSTEM},
             {"role": "user", "content": prompt},

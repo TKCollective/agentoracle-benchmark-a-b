@@ -22,6 +22,7 @@ MIT licensed, part of the Experiment A harness.
 from __future__ import annotations
 
 import hashlib
+import json
 import os
 import pathlib
 from dataclasses import dataclass, field
@@ -310,6 +311,15 @@ class LiveModelClient(BaseModelClient):
     def finalize(self, question: Dict[str, Any], citations: List[Dict[str, Any]]) -> str:
         data = self._ask(live_providers._finalize_prompt(question, citations))
         answer = data.get("answer")
+        if isinstance(answer, (dict, list)):
+            # mistral-medium-3-5 sometimes returns a structured object under
+            # "answer" instead of prose (observed live 2026-08-21, medical
+            # domain; dated deviation 2026-08-21b). The contracted shape is a
+            # string; a deterministic model re-emits the same structure on
+            # every retry, so rejecting it would park those questions forever.
+            # The structure is preserved verbatim as its canonical JSON
+            # serialization - content unchanged, nothing discarded.
+            answer = json.dumps(answer, ensure_ascii=False, sort_keys=True)
         if not isinstance(answer, str) or not answer.strip():
             raise live_providers.ProviderParseError(
                 f"{self.name}: reply had no 'answer' string: {str(data)[:200]}"
