@@ -417,6 +417,21 @@ The harness was a disclosed stub and the question set was empty, both scheduled
 below for 2026-08-17. That entry now carries a dated correction quoting its
 original wording.
 
+## Sampling addendum - gpt-5.6-sol also rejects temperature (2026-08-21c)
+
+**Dated 2026-08-21, immediately after 2026-08-21b, before any gpt-5.6-sol
+question completed.** The two-question live probe after 2026-08-21b surfaced
+that gpt-5.6-sol, like claude-sonnet-5, rejects the `temperature` parameter
+outright (HTTP 400 `unsupported_value`: "'temperature' does not support 0.0
+with this model. Only the default (1) value is supported."). Under the
+minimum-variance ruling of deviation 2026-08-20b, the openai family now joins
+the no-temperature configuration: the parameter is omitted, provider-default
+sampling is in effect, and the run metadata records the verbatim rejection.
+Of the three families, only mistral-medium-3-5 accepts `temperature=0.0`;
+the cross-family difference is recorded per family, reported, never hidden.
+Nothing else changed. Digest unchanged:
+`f7f70bd92dc284adaeb2580117e324cf379fa4beae9a9a2c5fc0bd40aefee7a5`.
+
 ## Operational amendment - two provider dialect corrections (2026-08-21b)
 
 **Dated 2026-08-21, during the collection window, after the claude-sonnet-5

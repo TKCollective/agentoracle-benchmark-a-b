@@ -90,7 +90,15 @@ MAX_OUTPUT_TOKENS = 2048
 #: strongest supported minimum-variance configuration is used and the
 #: difference is recorded in run metadata - reported, never hidden.
 SAMPLING_COMPAT: Dict[str, Dict[str, Any]] = {
-    "openai": {"send_temperature": True},
+    "openai": {
+        "send_temperature": False,
+        "rejection": (
+            "HTTP 400 unsupported_value: \"'temperature' does not support 0.0 "
+            "with this model. Only the default (1) value is supported.\" "
+            "(observed live 2026-08-21, pin gpt-5.6-sol; parameter omitted, "
+            "provider default sampling in effect)"
+        ),
+    },
     "mistral": {"send_temperature": True},
     "anthropic": {"send_temperature": False, "rejection":
         "HTTP 400 invalid_request_error: '`temperature` is deprecated for this "
