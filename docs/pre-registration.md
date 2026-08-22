@@ -473,6 +473,86 @@ exists (`src/averitec/runner_parametric.py`, `src/clients/parametric_client.py`,
 made about how much of 57.6% is retrieval rather than memorization. The run is
 scheduled after this experiment's collection window closes, and the delta will
 be published with the Sep 2 results whatever it shows.
+
+## Gate semantics deviation - what the gate actually evaluates
+
+**Dated 2026-08-21. Published before the first live collection run and before
+any data exists, under the deviation rule stated in this document. This entry
+changes no measurement and no code path; it corrects what this document says is
+being measured.**
+
+**The gate verifies claim truth against independent multi-source retrieval. It
+does not assess whether the cited source supports the claim.**
+
+`POST /evaluate` accepts `{content, min_confidence}`. It evaluates the claim in
+`content` against its own retrieval across multiple sources and returns a
+per-claim verdict with confidence. Its `url` parameter is read **only when
+`content` is absent**, in which case the URL's contents are fetched and become
+the material evaluated instead of the claim. **There is therefore no mode in
+which a claim and a source are submitted together and the source is checked for
+support of the claim.** The contract was probed live on 2026-08-20 and is
+recorded in the deviation covering the gate request/response contract.
+
+**Why this needs saying.** Language elsewhere in this project described the
+gate as checking whether a citation supports its claim - the fixture reason
+strings, corrected in the same commit family as this entry, previously read
+*"claim located in cited source"* and *"cited source does not contain the
+claim."* That describes citation-support checking, which is a different
+measurement from the one this experiment performs. Left unstated, a reader
+would reasonably conclude the experiment measures whether agents cite sources
+that actually contain their claims. It does not.
+
+**What is measured, stated precisely.** Agent G proposes a citation for a claim
+and submits the claim to a gate that judges the claim's truth against
+independent retrieval. On a non-passing verdict the citation is withheld and
+the agent replans. The measured quantity is the survival rate, under
+independent ground truth, of the citations each arm finally emits. The
+intervention under test is therefore **a claim-truth gate**, and the question
+is whether interposing one changes what a research agent ends up asserting.
+That question is intact, unaffected by this correction, and is the question the
+published numbers answer.
+
+**What is not measured.** Whether a cited source contains the claim attributed
+to it. This experiment produces no evidence about citation-source fidelity, and
+no number from it should be described as a citation-support or
+citation-accuracy rate.
+
+**The gate-accuracy metric, restated.** The precision, recall, and confusion
+matrix defined earlier in this document are **accuracy on claim truth**: of the
+claims the gate passed, how many survived ground truth; of the claims that fail
+ground truth, how many the gate caught. They are not accuracy at determining
+whether a source supports a claim. The false-positive rate remains the number
+that matters most, on the same reasoning given where the metric is defined - a
+claim-truth gate that blocks true claims destroys usable evidence, and survival
+rate alone hides that cost.
+
+**Why the payload was not changed instead.** Three reasons, recorded so the
+choice is auditable rather than convenient:
+
+1. **Changing the request would create the appearance of a capability that does
+   not exist.** Inlining a citation's URL and title into `content` would cause
+   the gate to evaluate a longer string; it would not cause the gate to check
+   whether that source supports the claim. The product has no such mode. A
+   payload change would make the experiment *look* like a citation-support study
+   while measuring something else - strictly worse than naming the measurement
+   correctly.
+2. **The claude-sonnet-5 family is already complete under claim-only
+   semantics.** Changing the gate contract mid-experiment would invalidate
+   collected data and restart the window.
+3. **The intervention question survives intact.** *Does a claim-verification
+   gate change what an agent asserts* is a real, measurable, and useful
+   question. It is not the question a citation-support gate would answer, and
+   this document now says which one it is.
+
+**Standard applied.** This is the same treatment given to the model
+substitution, the question-set freeze, the execution environment, the gate
+contract, and the 57.6% attribution: a constraint discovered before the data
+exists is published as a dated deviation with the original text left standing,
+never absorbed silently. This one is a framing correction rather than a
+mechanical one, which makes publishing it more important, not less - a
+mechanical error is caught by a reviewer running the code, while a framing
+error is caught only by a reviewer who reads the gate's contract, and would
+otherwise stand as an overclaim.
 ## Schedule
 
 | Date | Milestone |
