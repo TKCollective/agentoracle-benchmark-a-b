@@ -12,10 +12,13 @@ Three outcomes are modelled, and only one of them passes:
 * ``indeterminate``  -> does NOT pass (explicitly; an unverifiable citation is
   not a verified citation)
 
-Transport failures raise / surface as ``GateError`` outcomes. A gate error can
-never silently become a pass: ``GateDecision.passed`` is ``True`` only for the
-literal ``valid`` verdict, and the error path returns ``outcome="error"`` with
-``passed == False``.
+Transport failures **raise** ``GateError``; they are never returned as a
+verdict. A gate that could not answer is an execution failure, not a decision
+about the citation, so it propagates to the runner, which leaves the question
+pending and exits non-zero. A gate error therefore cannot silently become a
+pass, and equally cannot silently become a ``fail`` -- recording one as a
+negative verdict would assert the gate rejected a citation it never judged
+(deviation 2026-08-20c; corrected description 2026-08-21).
 
 The *fail-closed replan* behaviour deliberately does NOT live here. This client
 reports; the integrator (``harness/agents/agent_gated.py``) decides. Keeping the
@@ -281,19 +284,34 @@ class EvaluateClient:
         """Deterministic offline verdict for ``--dry-run``.
 
         Derived from a stable hash of the request so repeated dry runs are
-        byte-identical, and so all four branches occur in a 5-question run.
-        No network I/O, no live gate, no LLM.
+        byte-identical, and so every branch the live gate can produce occurs in a
+        5-question run. No network I/O, no live gate, no LLM.
+
+        **No transport-error branch (2026-08-21).** Bucket 19 previously returned
+        ``outcome="error"``, which the live path can no longer produce at all --
+        transport failures raise ``GateError``. A fixture that emits a verdict
+        the live client never emits makes dry-run stop modelling live, and a
+        hash-derived failure is permanent rather than transient, so the affected
+        questions could never clear on retry. The error path is covered by
+        injection in the tests, which asserts more: the exception type, that no
+        receipt is written, that no replan is counted, and the runner's exit code.
+
+        **Reason strings state claim truth, not citation support (2026-08-21).**
+        These previously read "claim located in cited source" / "cited source does
+        not contain the claim", describing a citation-support check the production
+        gate does not perform: ``/evaluate`` verifies the claim against its own
+        independent multi-source retrieval and does not assess whether the
+        supplied source contains it. See ``docs/pre-registration.md``, gate
+        semantics deviation 2026-08-21.
         """
         blob = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()
         bucket = hashlib.sha256(blob).digest()[0] % 20
         if bucket < 11:
-            outcome, reason = VERDICT_VALID, "fixture: claim located in cited source"
+            outcome, reason = VERDICT_VALID, "fixture: claim supported by independent retrieval"
         elif bucket < 16:
-            outcome, reason = VERDICT_INVALID, "fixture: cited source does not contain the claim"
-        elif bucket < 19:
-            outcome, reason = VERDICT_INDETERMINATE, "fixture: source not retrievable"
+            outcome, reason = VERDICT_INVALID, "fixture: claim refuted by independent retrieval"
         else:
-            outcome, reason = "error", "fixture: simulated gate transport failure"
+            outcome, reason = VERDICT_INDETERMINATE, "fixture: claim not resolvable from available sources"
         return GateDecision(
             citation_id=payload["citation_id"],
             question_id=payload["question_id"],
