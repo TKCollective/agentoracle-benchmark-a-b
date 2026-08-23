@@ -431,6 +431,19 @@ per-family effective cap is recorded in run metadata. Prompts, questions, pins,
 thresholds, metrics, scoring: untouched. Digest unchanged:
 `f7f70bd92dc284adaeb2580117e324cf379fa4beae9a9a2c5fc0bd40aefee7a5`.
 
+## Output-cap addendum II - claude-sonnet-5 shows the same starvation (2026-08-22b)
+
+**Dated 2026-08-22, immediately after the gpt-5.6-sol output-cap addendum.**
+Failure-category review of the claude-sonnet-5 family showed the same
+signature: 89 replies truncated mid-JSON and 31 empty bodies at
+`max_tokens=2048`. The anthropic family cap is raised to 8192 on the same
+grounds: the 113 questions already completed under the 2048 cap are untouched
+(their cap is recorded in run metadata); the remaining 87 collect under 8192,
+distinguishable by run-invocation metadata. This cross-regime boundary within
+the family is disclosed here and must be reported in analysis. Prompts,
+questions, pins, thresholds, metrics, scoring: untouched. Digest unchanged:
+`f7f70bd92dc284adaeb2580117e324cf379fa4beae9a9a2c5fc0bd40aefee7a5`.
+
 ## Sampling addendum - gpt-5.6-sol also rejects temperature (2026-08-21c)
 
 **Dated 2026-08-21, immediately after 2026-08-21b, before any gpt-5.6-sol

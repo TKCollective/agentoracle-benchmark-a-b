@@ -107,7 +107,8 @@ SAMPLING_COMPAT: Dict[str, Dict[str, Any]] = {
         ),
     },
     "mistral": {"send_temperature": True},
-    "anthropic": {"send_temperature": False, "rejection":
+    "anthropic": {"max_output_tokens": 8192,  # deviation 2026-08-22b
+        "send_temperature": False, "rejection":
         "HTTP 400 invalid_request_error: '`temperature` is deprecated for this "
         "model.' (observed live 2026-08-20, pin claude-sonnet-5; parameter "
         "omitted, provider default sampling in effect)"},
@@ -257,11 +258,12 @@ def _extract_json(text: str) -> Dict[str, Any]:
 
 
 def _payload(family: str, pin: str, prompt: str) -> Dict[str, Any]:
+    cap = int(SAMPLING_COMPAT.get(family, {}).get("max_output_tokens", MAX_OUTPUT_TOKENS))
     _st = bool(SAMPLING_COMPAT.get(family, {"send_temperature": True}).get("send_temperature", True))
     if family == "anthropic":
         p = {
             "model": pin,
-            "max_tokens": MAX_OUTPUT_TOKENS,
+            "max_tokens": cap,
             "system": _SYSTEM,
             "messages": [{"role": "user", "content": prompt}],
         }
