@@ -417,6 +417,20 @@ The harness was a disclosed stub and the question set was empty, both scheduled
 below for 2026-08-17. That entry now carries a dated correction quoting its
 original wording.
 
+## Output-cap addendum - reasoning-token starvation on gpt-5.6-sol (2026-08-22 output-cap)
+
+**Dated 2026-08-22, during the collection window, with 36 gpt-5.6-sol
+questions completed.** Overnight collection produced 161 parse failures of one
+shape: "provider returned an empty body." gpt-5.6-sol is a reasoning-family
+model whose hidden reasoning tokens count against `max_completion_tokens`; at
+the pre-registered 2048 the reasoning frequently consumed the whole budget and
+the visible answer arrived empty. Every affected question was parked pending by
+the execution-failure machinery; the 36 completed questions are unaffected and
+untouched. The output cap for the openai family only is raised to 8192; the
+per-family effective cap is recorded in run metadata. Prompts, questions, pins,
+thresholds, metrics, scoring: untouched. Digest unchanged:
+`f7f70bd92dc284adaeb2580117e324cf379fa4beae9a9a2c5fc0bd40aefee7a5`.
+
 ## Sampling addendum - gpt-5.6-sol also rejects temperature (2026-08-21c)
 
 **Dated 2026-08-21, immediately after 2026-08-21b, before any gpt-5.6-sol

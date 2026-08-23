@@ -91,6 +91,13 @@ MAX_OUTPUT_TOKENS = 2048
 #: difference is recorded in run metadata - reported, never hidden.
 SAMPLING_COMPAT: Dict[str, Dict[str, Any]] = {
     "openai": {
+        # gpt-5.6-sol is a reasoning-family model: hidden reasoning tokens
+        # count against max_completion_tokens, and at 2048 the visible answer
+        # frequently arrived empty ("provider returned an empty body",
+        # observed live 2026-08-21/22, 161 parse failures). The output cap is
+        # raised for this family only; the contracted content and every other
+        # parameter are unchanged (dated deviation 2026-08-22).
+        "max_output_tokens": 8192,
         "send_temperature": False,
         "rejection": (
             "HTTP 400 unsupported_value: \"'temperature' does not support 0.0 "
@@ -128,7 +135,7 @@ def sampling_record(family: str, pin: str, auth: str = "proxy_injected") -> Dict
         "family": family,
         "pin_sent": pin,
         "temperature_requested": TEMPERATURE,
-        "max_output_tokens": MAX_OUTPUT_TOKENS,
+        "max_output_tokens": int(_c.get("max_output_tokens", MAX_OUTPUT_TOKENS)),
         "transport": "httpx",
         "auth": auth,
         "notes": [],
@@ -266,9 +273,10 @@ def _payload(family: str, pin: str, prompt: str) -> Dict[str, Any]:
     # require "max_completion_tokens" (observed live 2026-08-20, pin
     # gpt-5.6-sol; dated deviation 2026-08-21b).
     token_key = "max_completion_tokens" if family == "openai" else "max_tokens"
+    cap = int(SAMPLING_COMPAT.get(family, {}).get("max_output_tokens", MAX_OUTPUT_TOKENS))
     p = {
         "model": pin,
-        token_key: MAX_OUTPUT_TOKENS,
+        token_key: cap,
         "messages": [
             {"role": "system", "content": _SYSTEM},
             {"role": "user", "content": prompt},
