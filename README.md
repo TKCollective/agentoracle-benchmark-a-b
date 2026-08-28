@@ -69,3 +69,24 @@ publishes alongside the raw JSONL so results can be checked offline.
   [`docs/pre-registration.md`](docs/pre-registration.md)
 - AVeriTeC (Schlichtkrull et al., NeurIPS 2023), summarized in the
   AgentOracle whitepaper: https://agentoracle.co/whitepaper
+
+---
+
+## Amendment — 2026-08-27
+
+Append-only. Nothing above this line has been edited. The pre-registration, the frozen
+question-set hash, and the original Status checklist are preserved as published so the
+trail remains checkable against what was committed in advance.
+
+**Collection closed 2026-08-25 at 593 of 600, with 7 documented-unresolved.**
+
+**The pre-registered headline finding is withdrawn.** The gated arm measured a degraded
+service, so the quantity the pre-registration set out to measure was not the quantity the
+run produced. Withdrawing it is the pre-registration working as intended: the design was
+frozen before the data, and the data does not support the headline.
+
+**What publishes on 2026-09-02** is the null result, together with the service-integrity
+defect that caused it, and the raw JSONL.
+
+The two unticked boxes in the Status checklist above are superseded by this amendment and
+are deliberately left unticked rather than rewritten.
